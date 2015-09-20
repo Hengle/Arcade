@@ -13,9 +13,4 @@ public class PhysicsBullet : MonoBehaviour {
 	void Start () {
 		rb.AddForce (transform.forward * launchForce);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

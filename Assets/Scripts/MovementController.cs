@@ -31,6 +31,5 @@ public class MovementController : MonoBehaviour {
 		if (rb.velocity.z > maxVelocity || rb.velocity.z < maxVelocity * -0.7f) {
 			rb.velocity = rb.velocity.normalized * maxVelocity;
 		}
-		Debug.Log (rb.velocity);
 	}
 }

@@ -3,20 +3,41 @@ using System.Collections;
 
 public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
-	[SerializeField]
-	protected float fireRate;
-	protected float coolDown;
-
-	protected float Damage;
+	public string name = null;
 
 	[SerializeField]
-	protected WeaponClass weaponClass;
+	private float fireRate;
+	private float coolDown;
+
+	private Transform parent;
+
 	[SerializeField]
-	protected WeaponType weaponType;
+	private WeaponClass weaponClass;
 	[SerializeField]
-	protected Transform weaponProjectile;
+	private WeaponType weaponType;
 	[SerializeField]
-	protected Transform projectileSpawn;
+	private Transform weaponProjectile;
+	private Transform projectileSpawn;
+
+	void Start () {
+		this.projectileSpawn = transform.FindChild ("ProjectileSpawn");
+		this.parent = transform.root;
+		Debug.Log (this.projectileSpawn.transform.root.name + ", " + this.transform.root);
+
+	}
+
+	void Update () {
+		if (coolDown > 0) {
+			this.coolDown -= Time.deltaTime;
+		}
+	}
+
+	public bool CanFire () {
+		if (coolDown <= 0) {
+			return true;
+		}
+		return false;
+	}
 
 	public WeaponClass GetWeaponClass () {
 		return this.weaponClass;
@@ -27,6 +48,8 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	}
 
 	public void Fire () {
-		Instantiate (this.weaponProjectile, projectileSpawn.transform.position, Quaternion.identity);
+		this.coolDown = 1 / fireRate;
+		Instantiate (weaponProjectile, this.projectileSpawn.transform.position, this.transform.root.rotation);
+		Debug.Log ("Entity " + parent.name + " is firing Weapon: " + this.name);
 	}
 }

@@ -22,8 +22,10 @@ public class WeaponController : MonoBehaviour {
 	}
 
 	void FirePrimary () {
-		Debug.Log ("Firing Primary Weapon.");
-		pWeapon.Fire ();
+		if (pWeapon.CanFire ()) {
+			Debug.Log ("Firing Primary Weapon.");
+			pWeapon.Fire ();
+		}
 	}
 
 	void FireSecondary () {
