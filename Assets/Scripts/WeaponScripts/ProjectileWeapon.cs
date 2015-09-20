@@ -22,8 +22,6 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	void Start () {
 		this.projectileSpawn = transform.FindChild ("ProjectileSpawn");
 		this.parent = transform.root;
-		Debug.Log (this.projectileSpawn.transform.root.name + ", " + this.transform.root);
-
 	}
 
 	void Update () {
