@@ -9,8 +9,6 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	private float fireRate;
 	private float coolDown;
 
-	private Transform parent;
-
 	[SerializeField]
 	private WeaponClass weaponClass;
 	[SerializeField]
@@ -21,7 +19,6 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
 	void Start () {
 		this.projectileSpawn = transform.FindChild ("ProjectileSpawn");
-		this.parent = transform.root;
 	}
 
 	void Update () {
@@ -48,6 +45,5 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	public void Fire () {
 		this.coolDown = 1 / fireRate;
 		Instantiate (weaponProjectile, this.projectileSpawn.transform.position, this.transform.root.rotation);
-		Debug.Log ("Entity " + parent.name + " is firing Weapon: " + this.name);
 	}
 }

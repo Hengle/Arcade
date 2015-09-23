@@ -12,18 +12,28 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 
 	[SerializeField]
 	private ResistanceProfile resistanceProfile = new ResistanceProfile ();
+	public EnergyBar bar;
 
 	void Start () {
 		currentHealth = maxHealth;
+		if (isPlayer) {
+			bar = GameObject.FindWithTag ("Player1Health").GetComponent<EnergyBar> ();
+			bar.valueMax = (int) maxHealth;
+		}
 	}
 
 	void Update () {
 		if (currentHealth <= 0) {
 			isAlive = false;
-
 			if (!isPlayer) {
 				Destroy (this.gameObject);
 			}
+		}
+		if (isPlayer) {
+			if (currentHealth < 0) {
+				bar.valueCurrent = 0;
+			}
+			bar.valueCurrent = (int) currentHealth;
 		}
 	}
 

@@ -15,8 +15,10 @@ public class PlayMenuBehaviour : StateMachineBehaviour {
 
 	// OnStateExit is called before OnStateExit is called on any state inside this state machine
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (stateInfo.IsTag ("Awake")) {
-			animator.SetBool ("AwakeDone", true);
+		if (stateInfo.IsTag ("Transition")) {
+			animator.SetBool ("Done", true);
+		} else {
+			animator.SetBool ("Done", false);
 		}
 	}
 

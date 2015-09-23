@@ -8,7 +8,7 @@ public class PlayMenuLogic : MonoBehaviour {
 	Animator animator;
 	bool awakeDone;
 	bool buttonsInitialized;
-
+	
 	public GameObject buttonContainer;
 
 	void Start () {
@@ -24,7 +24,9 @@ public class PlayMenuLogic : MonoBehaviour {
 	
 	void Update () {
 		if (!awakeDone) {
-			awakeDone = animator.GetBool ("AwakeDone");
+			awakeDone = animator.GetBool ("Done");
+		} else {
+			animator.GetBool ("Done");
 		}
 
 		if (!buttonsInitialized && awakeDone) {
@@ -32,9 +34,15 @@ public class PlayMenuLogic : MonoBehaviour {
 		}
 	}
 
+	void OnDisable () {
+		awakeDone = false;
+		buttonsInitialized = false;
+	}
+
 	void InitilizeButtons () {
 		if (buttonContainer != null) {
 			buttonContainer.SetActive (true);
+			buttonContainer.transform.FindChild ("ButtonSolo").GetComponent<Button> ().Select ();
 		}
 		buttonsInitialized = true;
 	}
