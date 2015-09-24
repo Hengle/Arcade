@@ -5,6 +5,8 @@ public class WorldManager : MonoBehaviour {
 
 	public static WorldManager instance;
 
+	public Transform playerSpawnPoint;
+
 	[SerializeField]
 	private Boundary boundary;
 

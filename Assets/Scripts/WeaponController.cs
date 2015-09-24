@@ -14,8 +14,12 @@ public class WeaponController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		pWeapon = primaryWeapon.GetComponent<IWeapon> ();
-		sWeapon = secondaryWeapon.GetComponent<IWeapon> ();
+		if (primaryWeapon != null) {
+			pWeapon = primaryWeapon.GetComponent<IWeapon> ();
+		}
+		if (secondaryWeapon != null) {
+			sWeapon = secondaryWeapon.GetComponent<IWeapon> ();
+		}
 	}
 
 	// Update is called once per frame
@@ -29,13 +33,18 @@ public class WeaponController : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		if (pWeapon.CanFire () && primaryFired) {
+		if (pWeapon != null) {
+			if (primaryFired) {
+				pWeapon.Fire ();
+			}		
 			primaryFired = false;
-			pWeapon.Fire ();
 		}
-		if (sWeapon.CanFire () && primaryFired) {
+
+		if (sWeapon != null) {
+			if (primaryFired) {
+				sWeapon.Fire ();
+			}
 			secondaryFired = false;
-			pWeapon.Fire ();
 		}
 	}
 

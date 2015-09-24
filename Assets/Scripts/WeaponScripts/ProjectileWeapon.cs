@@ -8,6 +8,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	[SerializeField]
 	private float fireRate;
 	private float coolDown;
+	private int spawnIndex = 0;
 
 	[SerializeField]
 	private WeaponClass weaponClass;
@@ -15,10 +16,18 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	private WeaponType weaponType;
 	[SerializeField]
 	private Transform weaponProjectile;
-	private Transform projectileSpawn;
+	private Transform[] projectileSpawn;
+	private bool hasMultiSpawn = false;
 
-	void Start () {
-		this.projectileSpawn = transform.FindChild ("ProjectileSpawn");
+	void Awake () {
+		if (transform.FindChild ("ProjectileSpawn").GetComponent<ProjectileMultiSpawn> () != null) {
+			projectileSpawn = transform.FindChild ("ProjectileSpawn").GetComponent<ProjectileMultiSpawn> ().SpawnPoint;
+			hasMultiSpawn = true;
+		} else {
+			projectileSpawn = new Transform[] {transform.FindChild ("ProjectileSpawn")};
+		}
+
+		Debug.Log ("Has Multi Spawn: " + hasMultiSpawn + ", Num Spawns: " + projectileSpawn.Length);
 	}
 
 	void Update () {
@@ -43,7 +52,15 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	}
 
 	public void Fire () {
-		this.coolDown = 1 / fireRate;
-		Instantiate (weaponProjectile, this.projectileSpawn.transform.position, this.transform.root.rotation);
+		if (coolDown <= 0) {
+			coolDown = 1 / fireRate;
+			Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.root.rotation);
+
+			if (spawnIndex == projectileSpawn.Length -1) {
+				spawnIndex = 0;
+			} else {
+				spawnIndex ++;
+			}
+		}
 	}
 }

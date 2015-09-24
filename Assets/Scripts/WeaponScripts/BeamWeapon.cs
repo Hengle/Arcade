@@ -15,10 +15,13 @@ public class BeamWeapon : MonoBehaviour, IWeapon {
 	private WeaponType weaponType;
 	[SerializeField]
 	private Transform weaponEffect;
+	private AudioSource aud;
+
 	private Transform projectileSpawn;
 
 	void Start () {
-		this.projectileSpawn = transform.FindChild ("ProjectileSpawn");
+		projectileSpawn = transform.FindChild ("ProjectileSpawn");
+		aud = GetComponent<AudioSource> ();
 	}
 	
 	void Update () {
@@ -43,7 +46,10 @@ public class BeamWeapon : MonoBehaviour, IWeapon {
 	}
 	
 	public void Fire () {
-		this.coolDown = 1 / fireRate;
-		Instantiate (weaponEffect, projectileSpawn.transform.position, transform.root.rotation);
+		if (coolDown <= 0) {
+			coolDown = 1 / fireRate;
+			aud.Play ();
+			Instantiate (weaponEffect, projectileSpawn.transform.position, transform.root.rotation);
+		}
 	}
 }
