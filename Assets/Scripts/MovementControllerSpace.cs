@@ -5,7 +5,9 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 
 	// References
 	private Rigidbody rb;
-	
+
+	public bool is3D = false;
+
 	// Movement Values
 	[SerializeField]
 	private float maxVelocity = 3f;
@@ -33,19 +35,35 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 		float velocityMagnitude = rb.velocity.magnitude;
 		float angle;
 
+		rb.AddForce (transform.forward * moveInput.z * accelerationForce);
+		rb.AddTorque (transform.forward * moveInput.x * -rotationForce.z);
+
+		rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
+		rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
+		/*
 		if (rotVector.magnitude > 0.1) {
-			angle = Vector3.Angle (transform.right, rotVector);
-			if (angle < 90) {
-				rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * rotationForce.y);
+			if (is3D) {
+				rb.AddTorque (transform.forward * rotVector.x * -rotationForce.x);
+				rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
 			} else {
-				rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * -rotationForce.y);
+				angle = Vector3.Angle (transform.right, rotVector);
+				if (angle < 90) {
+					rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * rotationForce.y);
+				} else {
+					rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * -rotationForce.y);
+				}
 			}
 		}
 
 		if (moveInput.magnitude > 0.1f) {
-			rb.AddForce (accelerationForce * moveInput);
+			rb.AddForce (transform.forward * moveInput.z * accelerationForce);
+			if (is3D) {
+				rb.AddTorque (transform.up * moveInput.x * rotationForce.z);
+			} else {
+				rb.AddForce (transform.right * moveInput.x * accelerationForce);
+			}
 		}
-
+		*/
 		if (velocityMagnitude > maxVelocity) {
 			rb.velocity = rb.velocity.normalized * maxVelocity;
 			
@@ -54,7 +72,7 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 		}
 		
 		//transform.rotation = Quaternion.Euler (transform.rotation.x, transform.rotation.y, rb.velocity.x * -tilt);
-				
+
 		rb.position.Set
 		(
 			Mathf.Clamp (rb.position.x, boundary.xMin, boundary.xMax), 

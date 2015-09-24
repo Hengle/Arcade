@@ -24,8 +24,6 @@ public class GameManager : MonoBehaviour {
 	private bool mapEndScreen = false;
 
 	void Start () {
-		respawnText.gameObject.SetActive (false);
-
 		if (instance == null) {
 			instance = this;
 		} else {
@@ -38,6 +36,7 @@ public class GameManager : MonoBehaviour {
 		switch (gameState) {
 		case GameState.GAME:
 			GetComponent<AudioSource> ().enabled = true;
+			respawnText.gameObject.SetActive (false);
 			break;
 		}
 	}

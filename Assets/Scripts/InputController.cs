@@ -45,7 +45,7 @@ public class InputController : MonoBehaviour {
 		movement.z = Input.GetAxis ("ControllerLY" + pd.Index);
 
 		rotation.x = Input.GetAxis ("ControllerRX" + pd.Index);
-		rotation.z = Input.GetAxis ("ControllerRY" + pd.Index);
+		rotation.y = Input.GetAxis ("ControllerRY" + pd.Index);
 
 		mc.SetRotationVector (rotation);
 		mc.SetMovementVector (movement);
