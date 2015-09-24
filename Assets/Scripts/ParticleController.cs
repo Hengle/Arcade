@@ -14,18 +14,19 @@ public class ParticleController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		rb = GetComponent<Rigidbody> ();
-		ip = GetComponent<InputController> ();
-		exhaust1 = exhaust.transform.FindChild ("Pipe0").FindChild ("ExhaustSmoke").GetComponent<ParticleSystem> ();
-		exhaust2 = exhaust.transform.FindChild ("Pipe1").FindChild ("ExhaustSmoke").GetComponent<ParticleSystem> ();
+		this.rb = GetComponent<Rigidbody> ();
+		this.ip = GetComponent<InputController> ();
+		this.exhaust1 = exhaust.transform.FindChild ("Pipe0").FindChild ("ExhaustSmoke").GetComponent<ParticleSystem> ();
+		this.exhaust2 = exhaust.transform.FindChild ("Pipe1").FindChild ("ExhaustSmoke").GetComponent<ParticleSystem> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		exhaustRate = exhaustBaseRate + exhaustBaseRate * (ip.InputVerical * ip.InputVerical);
-		exhaustRate *= exhaustRate / exhaustBaseRate;
-
-		exhaust1.emissionRate = exhaustRate;
-		exhaust2.emissionRate = exhaustRate;
+		if (ip != null) {
+			this.exhaustRate = exhaustBaseRate + exhaustBaseRate * (ip.InputVerical * ip.InputVerical);
+			this.exhaustRate *= exhaustRate / exhaustBaseRate;
+		}
+		this.exhaust1.emissionRate = exhaustRate;
+		this.exhaust2.emissionRate = exhaustRate;
 	}
 }
