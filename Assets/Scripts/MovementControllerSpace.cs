@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MovementControllerSpace : MonoBehaviour, IMovementController {
+public class MovementControllerSpace : MonoBehaviour, IMovementController, IPausable {
 
 	// References
 	private Rigidbody rb;
@@ -40,30 +40,7 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 
 		rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
 		rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
-		/*
-		if (rotVector.magnitude > 0.1) {
-			if (is3D) {
-				rb.AddTorque (transform.forward * rotVector.x * -rotationForce.x);
-				rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
-			} else {
-				angle = Vector3.Angle (transform.right, rotVector);
-				if (angle < 90) {
-					rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * rotationForce.y);
-				} else {
-					rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * -rotationForce.y);
-				}
-			}
-		}
-
-		if (moveInput.magnitude > 0.1f) {
-			rb.AddForce (transform.forward * moveInput.z * accelerationForce);
-			if (is3D) {
-				rb.AddTorque (transform.up * moveInput.x * rotationForce.z);
-			} else {
-				rb.AddForce (transform.right * moveInput.x * accelerationForce);
-			}
-		}
-		*/
+	
 		if (velocityMagnitude > maxVelocity) {
 			rb.velocity = rb.velocity.normalized * maxVelocity;
 			
@@ -80,7 +57,11 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 			Mathf.Clamp (rb.position.z, boundary.zMin, boundary.zMax)
 		);
 	}
-	
+
+	void OnPauseGame () {
+
+	}
+
 	public void SetMovementVector (Vector3 vector) {
 		moveInput = vector;
 	}

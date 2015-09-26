@@ -14,7 +14,6 @@ public class NPCWeaponManager : MonoBehaviour {
 
 		for (int i = 0; i < weaponMounts.Length; i++) {
 			weaponSystems[i] = weaponMounts[i].transform.GetChild (0).GetComponent<IWeapon> ();
-			Debug.Log (transform.root.name + " assigned with waepon: " + weaponSystems[i]);
 		}
 
 		if (testWeapons) {

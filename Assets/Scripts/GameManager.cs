@@ -3,14 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 
+
 public class GameManager : MonoBehaviour {
 
 	public enum GameState {MAIN_MENU, GAME}
 
 	public static GameManager instance;
 
-	public static PlayerData[] players = new PlayerData[2];
-	private static GameState gameState;
+	private PlayerData[] players;
+	private GameState gameState;
 
 	public Text respawnText;
 
@@ -18,17 +19,28 @@ public class GameManager : MonoBehaviour {
 		get {return gameState;}
 	}
 
+	public PlayerData[] Players {
+		get {return players;}
+	}
+
 	// Variables
 	[SerializeField]
 	private int currentLevel = 0;
 	private bool mapEndScreen = false;
 
-	void Start () {
+	void Awake () {
 		if (instance == null) {
 			instance = this;
 		} else {
 			Destroy (this.gameObject);
 		}
+		if (players == null) {
+			players = new PlayerData[1];
+		}
+	}
+	void Start () {
+		Debug.Log ("Number of players: " + players.Length);
+		StartCoroutine (AddPlayerTargets ());
 	}
 
 	void UpdateState () {
@@ -47,15 +59,29 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void StartSinglePlayer () {
+		players = new PlayerData[1];
 		StartCoroutine ("LoadLevel");
 	}
 
 	public void StartCoop () {
+		players = new PlayerData[2];
 		StartCoroutine ("LoadLevel");
 	}
 
 	public void StartRespawnTimer (GameObject go, float time) {
 		StartCoroutine (RespawnTimer (go, time));
+	}
+
+	public void PauseGame () {
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (IPausable));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnPauseGame", SendMessageOptions.DontRequireReceiver);
+		}
+	}
+
+	public void ExitToWindows () {
+		print ("Exiting");
+		Application.Quit ();
 	}
 
 	IEnumerator RespawnTimer (GameObject go, float time) {
@@ -79,7 +105,12 @@ public class GameManager : MonoBehaviour {
 		Debug.Log ("Loading Complete");
 	}
 
-	public void QuitGame () {
-		Application.Quit ();
+	IEnumerator AddPlayerTargets () {
+		yield return new WaitForEndOfFrame ();
+
+		foreach (PlayerData pd in players) {
+			print (pd.transform.name);
+			EnemyTarget.AddTarget (pd.transform, true);
+		}
 	}
 }

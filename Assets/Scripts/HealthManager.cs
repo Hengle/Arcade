@@ -17,9 +17,9 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	void Start () {
 		currentHealth = maxHealth;
 		if (isPlayer) {
-			//healthBar = GameObject.FindWithTag ("Player1Health").GetComponent<EnergyBar> ();
+			healthBar = GameObject.FindWithTag ("Player1Health").GetComponent<EnergyBar> ();
 
-			//healthBar.valueMax = (int) maxHealth;
+			healthBar.valueMax = (int) maxHealth;
 		}
 	}
 
@@ -38,7 +38,7 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 			if (currentHealth < 0) {
 				healthBar.valueCurrent = 0;
 			}
-			//healthBar.valueCurrent = (int) currentHealth;
+			healthBar.valueCurrent = (int) currentHealth;
 		}
 	}
 

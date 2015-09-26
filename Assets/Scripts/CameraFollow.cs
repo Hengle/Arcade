@@ -23,7 +23,7 @@ public class CameraFollow : MonoBehaviour {
 	IEnumerator FindFirstPlayer () {
 		PlayerData p;
 		while (true) {
-			p = GameManager.players[0];
+			p = GameManager.instance.Players[0];
 			if (p != null) {
 				player = p.gameObject.transform;
 				break;
