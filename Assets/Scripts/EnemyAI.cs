@@ -46,7 +46,7 @@ public class EnemyAI : MonoBehaviour {
 	//private Thread moveThread;
 
 	void Awake () {
-		print (curretTarget.position);
+		//print (curretTarget.position);
 		healthManager = GetComponent<HealthManager> ();
 		movementController = GetComponent<IMovementController> ();
 		weapons = GetComponent<NPCWeaponManager> ();
@@ -104,7 +104,7 @@ public class EnemyAI : MonoBehaviour {
 		while (true) {
 			hasPriorityTarget = false;
 
-			print ("Number of player Targets: " + EnemyTarget.instance.PlayerTargets.Length);
+			//print ("Number of player Targets: " + EnemyTarget.instance.PlayerTargets.Length);
 			foreach (Target target in EnemyTarget.instance.PlayerTargets) {
 				float distance = Vector3.Distance (ownPosition, target.position);
 				
@@ -114,7 +114,7 @@ public class EnemyAI : MonoBehaviour {
 						//	curretTarget = new Target (pd.transform, false, Random.Range (aggressionTime.x, aggressionTime.y));
 						//
 					}
-					print ("Player in rage of " + ownName +  " (" +")");
+					//print ("Player in rage of " + ownName +  " (" +")");
 					curretTarget = target;
 					weaponTarget = target;
 					hasPriorityTarget = true;

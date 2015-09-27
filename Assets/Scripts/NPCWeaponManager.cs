@@ -29,7 +29,6 @@ public class NPCWeaponManager : MonoBehaviour {
 		if (Physics.Raycast (ray, out hit, 80)) {
 			if (hit.transform.tag.Equals ("Player")) {
 				foreach (IWeapon wep in weaponSystems) {
-					
 					wep.Fire ();
 				}
 			}

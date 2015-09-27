@@ -15,7 +15,7 @@ public class PlayerData : MonoBehaviour {
 	public GameObject livesBar;
 
 	public int Index {
-		get {return index;}
+		get {return index+1;}
 	}
 	public int NumPlayers {
 		get {return GameManager.instance.Players.Length;}
@@ -33,7 +33,7 @@ public class PlayerData : MonoBehaviour {
 		for (int i = 0; i < GameManager.instance.Players.Length; i++) {
 			if (GameManager.instance.Players[i] == null) {
 				GameManager.instance.Players[i] = this;
-				index = i+1;
+				index = i;
 				break;
 			}
 		}
@@ -50,6 +50,8 @@ public class PlayerData : MonoBehaviour {
 		if (lives > 0) {
 			GameManager.instance.StartRespawnTimer (gameObject, respawnTime);
 			return true;
+		} else {
+			GameManager.instance.StartRespawnTimer (gameObject, -1);
 		}
 		return false;
 	}

@@ -45,6 +45,7 @@ public class InputController : MonoBehaviour {
 
 	void OnGameStart () {
 		int input = PlayerPrefs.GetInt ("InputType");
+		print (input);
 		switch (input) {
 		case (int) ControlType.KEYBOARD:
 			inputDevice = ControlType.KEYBOARD;

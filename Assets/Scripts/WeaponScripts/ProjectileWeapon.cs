@@ -29,7 +29,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 			projectileSpawn = new Transform[] {transform.FindChild ("ProjectileSpawn")};
 		}
 
-		Debug.Log ("Has Multi Spawn: " + hasMultiSpawn + ", Num Spawns: " + projectileSpawn.Length);
+		//Debug.Log ("Has Multi Spawn: " + hasMultiSpawn + ", Num Spawns: " + projectileSpawn.Length);
 	}
 
 	void Update () {
@@ -58,7 +58,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 			Transform go;
 			coolDown = 1 / fireRate;
 			print (weaponProjectile.name);
-			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.root.rotation);
+			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.rotation);
 			print ("IS: " +go.name);
 
 			if (spawnIndex == projectileSpawn.Length -1) {

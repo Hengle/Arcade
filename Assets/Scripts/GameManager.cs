@@ -7,11 +7,14 @@ using System;
 public class GameManager : MonoBehaviour {
 
 	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL}
-
+	private static GameState gameState;
 	public static GameManager instance;
 
+	// References
 	private PlayerData[] players;
-	private GameState gameState;
+	private AudioSource audioSource;
+	public AudioClip menuMusic;
+	public AudioClip spaceMusic;
 
 	public Text respawnText;
 
@@ -41,9 +44,13 @@ public class GameManager : MonoBehaviour {
 		if (players == null) {
 			players = new PlayerData[1];
 		}
+		audioSource = GetComponent<AudioSource> ();
 	}
 	void Start () {
 		Debug.Log ("Number of players: " + players.Length);
+		if (Application.loadedLevel == 1) {
+			SetGameState (GameState.GAME);
+		}
 	}
 
 	void UpdateState () {
@@ -53,8 +60,6 @@ public class GameManager : MonoBehaviour {
 			break;
 		case GameState.GAME:
 			StartGame ();
-			GetComponent<AudioSource> ().enabled = true; // Implement these in there relative calsses with the OnGameStart ()
-			respawnText.gameObject.SetActive (false); // Implement these in there relative calsses with the OnGameStart ()
 			break;
 		}
 	}
@@ -65,12 +70,12 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void StartSinglePlayer () {
-		players = new PlayerData[1];
+		instance.players = new PlayerData[1];
 		StartCoroutine ("LoadLevel");
 	}
 
 	public void StartCoop () {
-		players = new PlayerData[2];
+		instance.players = new PlayerData[2];
 		StartCoroutine ("LoadLevel");
 	}
 
@@ -94,7 +99,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void StartGame () {
+	void StartGame () {
 		print ("Sending OnGameStart");
 		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
@@ -102,22 +107,34 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	// Called on every GameObject once game level has been loaded
+	void OnStartGame () {
+		audioSource.clip = spaceMusic;
+		audioSource.enabled = true;
+		respawnText.gameObject.SetActive (false);
+	}
+
 	public void ExitToWindows () {
 		print ("Exiting");
 		Application.Quit ();
 	}
-
+	
 	IEnumerator RespawnTimer (GameObject go, float time) {
 		respawnText.gameObject.SetActive (true);
-		while (time > 0) {
-			respawnText.text = String.Format ("Respawning\n{0:f1} s", time);
-			time -= 0.1f;
-			yield return new WaitForSeconds (0.1f);
-		}
-		go.SetActive (true);
-		go.transform.position = WorldManager.instance.playerSpawnPoint.position;
-		respawnText.gameObject.SetActive (false);
+		if (time == -1) {
+			respawnText.text = "Game Over";
+		} else {
+			while (time > 0) {
+				respawnText.text = String.Format ("Respawning\n{0:f1} s", time);
+				time -= 0.1f;
+				yield return new WaitForSeconds (0.1f);
+			}
+			go.SetActive (true);
+			go.transform.position = WorldManager.instance.playerSpawnPoint.position;
+			
+			respawnText.gameObject.SetActive (false);
 
+		}
 		yield return null;
 	}
 
