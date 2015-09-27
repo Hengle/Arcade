@@ -40,7 +40,7 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 			}
 			
 			if (hasHitEffect) {
-				Instantiate (hitEffect, this.transform.position, Quaternion.identity);
+				Instantiate (hitEffect, other.ClosestPointOnBounds(transform.position + transform.forward * -rb.velocity.z), Quaternion.identity);
 			}
 			
 			Destroy (this.gameObject);

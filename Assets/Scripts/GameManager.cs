@@ -6,7 +6,7 @@ using System;
 
 public class GameManager : MonoBehaviour {
 
-	public enum GameState {MAIN_MENU, GAME}
+	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL}
 
 	public static GameManager instance;
 
@@ -30,8 +30,12 @@ public class GameManager : MonoBehaviour {
 
 	void Awake () {
 		if (instance == null) {
+			if (Application.loadedLevel == 1) {
+				StartCoroutine (AddPlayerTargets ());
+			}
 			instance = this;
 		} else {
+			print ("GAME MANGER ALREDY EXISTS");
 			Destroy (this.gameObject);
 		}
 		if (players == null) {
@@ -40,15 +44,17 @@ public class GameManager : MonoBehaviour {
 	}
 	void Start () {
 		Debug.Log ("Number of players: " + players.Length);
-		StartCoroutine (AddPlayerTargets ());
 	}
 
 	void UpdateState () {
 		Debug.Log ("Updating Game State (" + gameState + ")");
 		switch (gameState) {
+		case GameState.LOAD_LEVEL:
+			break;
 		case GameState.GAME:
-			GetComponent<AudioSource> ().enabled = true;
-			respawnText.gameObject.SetActive (false);
+			StartGame ();
+			GetComponent<AudioSource> ().enabled = true; // Implement these in there relative calsses with the OnGameStart ()
+			respawnText.gameObject.SetActive (false); // Implement these in there relative calsses with the OnGameStart ()
 			break;
 		}
 	}
@@ -73,9 +79,26 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void PauseGame () {
+		print ("Sending OnPauseGame");
 		UnityEngine.Object[] objects = FindObjectsOfType (typeof (IPausable));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnPauseGame", SendMessageOptions.DontRequireReceiver);
+		}
+	}
+
+	public void ResumeGame () {
+		print ("Sending OnResumeGame");
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (IPausable));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnResumeGame", SendMessageOptions.DontRequireReceiver);
+		}
+	}
+
+	public void StartGame () {
+		print ("Sending OnGameStart");
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnStartGame", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
@@ -99,18 +122,21 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator LoadLevel () {
+		SetGameState (GameState.LOAD_LEVEL);
 		yield return new WaitForSeconds (0.1f);
 		AsyncOperation async = Application.LoadLevelAsync (1);
 		yield return async;
 		Debug.Log ("Loading Complete");
+		SetGameState (GameState.GAME);
 	}
 
 	IEnumerator AddPlayerTargets () {
 		yield return new WaitForEndOfFrame ();
-
-		foreach (PlayerData pd in players) {
+		
+		foreach (PlayerData pd in instance.players) {
 			print (pd.transform.name);
 			EnemyTarget.AddTarget (pd.transform, true);
 		}
+
 	}
 }

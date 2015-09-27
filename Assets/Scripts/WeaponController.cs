@@ -3,8 +3,8 @@ using System.Collections;
 
 public class WeaponController : MonoBehaviour {
 
-	public GameObject primaryWeapon;
-	public GameObject secondaryWeapon;
+	public GameObject primaryWeaponMount;
+	public GameObject secondaryWeaponMount;
 
 	private IWeapon pWeapon;
 	private IWeapon sWeapon;
@@ -14,21 +14,12 @@ public class WeaponController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (primaryWeapon != null) {
-			pWeapon = primaryWeapon.GetComponent<IWeapon> ();
+		if (primaryWeaponMount != null) {
+			pWeapon = primaryWeaponMount.GetComponentInChildren<IWeapon> ();
+			print (pWeapon);
 		}
-		if (secondaryWeapon != null) {
-			sWeapon = secondaryWeapon.GetComponent<IWeapon> ();
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetAxis ("Triggers1") < -0.2) {
-			primaryFired = true;
-		}
-		if (Input.GetAxis ("Triggers1") > 0.2) {
-			secondaryFired = true;
+		if (secondaryWeaponMount != null) {
+			sWeapon = secondaryWeaponMount.GetComponentInChildren<IWeapon> ();
 		}
 	}
 
@@ -48,4 +39,11 @@ public class WeaponController : MonoBehaviour {
 		}
 	}
 
+	public void FirePrimary () {
+		primaryFired = true;
+	}
+
+	public void FireSecondary () {
+		secondaryFired = true;
+	}
 }

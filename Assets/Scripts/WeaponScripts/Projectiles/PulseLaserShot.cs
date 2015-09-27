@@ -6,12 +6,14 @@ public class PulseLaserShot : MonoBehaviour {
 	[SerializeField]
 	private float range = 800f;
 	[SerializeField]
-	private DamageProfile dm = new DamageProfile ();
+	private DamageProfile damageProfile = new DamageProfile ();
+	[SerializeField]
+	private Transform hitEffect;
 	private LineRenderer lr;
 
-	Ray ray;
-	RaycastHit hitInfo;
-	Vector3 hitPoint;
+	private Ray ray;
+	private RaycastHit hitInfo;
+	private Vector3 hitPoint;
 	
 	void Start () {
 		lr = GetComponent<LineRenderer> ();
@@ -22,9 +24,10 @@ public class PulseLaserShot : MonoBehaviour {
 			Debug.Log (hitInfo.transform.name);
 
 			if (hitInfo.transform.GetComponent<HealthManager> ()) {
-				hitInfo.transform.GetComponent<HealthManager> ().Damage (dm);
+				hitInfo.transform.GetComponent<HealthManager> ().Damage (damageProfile);
 			}
 			lr.SetPosition(1, hitInfo.point);
+			Instantiate (hitEffect, hitInfo.point, Quaternion.identity);
 		} else {
 			lr.SetPosition (1, transform.position + transform.forward * range);
 		}

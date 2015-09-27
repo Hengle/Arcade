@@ -7,6 +7,8 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
 	[SerializeField]
 	private float fireRate;
+	[SerializeField]
+	private float accuracy;
 	private float coolDown;
 	private int spawnIndex = 0;
 
@@ -53,8 +55,11 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
 	public void Fire () {
 		if (coolDown <= 0) {
+			Transform go;
 			coolDown = 1 / fireRate;
-			Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.root.rotation);
+			print (weaponProjectile.name);
+			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.root.rotation);
+			print ("IS: " +go.name);
 
 			if (spawnIndex == projectileSpawn.Length -1) {
 				spawnIndex = 0;

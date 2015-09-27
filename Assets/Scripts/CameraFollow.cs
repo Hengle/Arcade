@@ -15,8 +15,10 @@ public class CameraFollow : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		if (player != null) {
-			transform.position = player.transform.InverseTransformVector (player.transform.position) + cameraOffset;
-			transform.LookAt (player.transform.position);
+			transform.position = player.transform.position + cameraOffset;
+			transform.LookAt (player.transform.position + player.transform.forward);
+		} else {
+			transform.position = Vector3.zero;
 		}
 	}
 

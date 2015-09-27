@@ -20,9 +20,20 @@ public class NPCWeaponManager : MonoBehaviour {
 			StartCoroutine ("WeaponTest");
 		}
 	}
-	
-	void FixedUpdate () {
 
+	public void Fire () {
+		Ray ray = new Ray (transform.position, transform.forward);
+		RaycastHit hit;
+		Debug.DrawLine (transform.position, transform.position + transform.forward * 80, Color.red);
+
+		if (Physics.Raycast (ray, out hit, 80)) {
+			if (hit.transform.tag.Equals ("Player")) {
+				foreach (IWeapon wep in weaponSystems) {
+					
+					wep.Fire ();
+				}
+			}
+		}
 	}
 
 	IEnumerator WeaponTest () {

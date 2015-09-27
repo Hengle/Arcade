@@ -11,8 +11,10 @@ public class EnemyAI : MonoBehaviour {
 	// References
 	private HealthManager healthManager;
 	private IMovementController movementController;
+	private NPCWeaponManager weapons;
 	[SerializeField]
 	private Target curretTarget;
+	[SerializeField]
 	private Target weaponTarget;
 	private Vector3 ownPosition;
 	private string ownName;
@@ -29,53 +31,70 @@ public class EnemyAI : MonoBehaviour {
 	private float timeToNewTarget = 0.1f;
 	private bool hasPriorityTarget = false;
 	[SerializeField]
-	private float movementUpdateDelay = 0.1f;
-	private float timeToMovementUpdate = 0f;
+	private float movementUpdateDelay = 0.2f;
+	private float timeToMovementUpdate = 0.2f;
 	[SerializeField]
 	private bool canMove = true;
 	private Vector3 movementVector = Vector3.zero;
 	private Vector3 rotationVector = Vector3.zero;
 
-	private Thread thread;
+	public bool debugInfo = false;
+
+	private static int maxUpdatesPerFrame = 5;
+	private static int updatesPerFrame = 0;
+	private Thread scanThread;
+	//private Thread moveThread;
 
 	void Awake () {
 		print (curretTarget.position);
 		healthManager = GetComponent<HealthManager> ();
 		movementController = GetComponent<IMovementController> ();
+		weapons = GetComponent<NPCWeaponManager> ();
 	}
 
 	void Start () {
 		ownPosition = transform.position;
 		ownName = transform.name;
-		thread = new Thread (new ThreadStart (TargetScan));
-		thread.Name = ("Target Scanner for: " + transform.name);
-		thread.Start ();
+
+		scanThread = new Thread (new ThreadStart (TargetScan));
+		scanThread.Name = ("Target Scanner for: " + transform.name);
+		scanThread.Start ();
+
+		//moveThread = new Thread (new ThreadStart (UpdateMovement));
+		//moveThread.Name = ("Movement Update for: " + transform.name);
+		//moveThread.Start ();
+
 		StartCoroutine (UpdatePosition (transform));
 	}
 
 	void Update () {
-		/*if (timeToTargetScan <= 0) {
-			timeToNewTarget = targetScanDelay;
-			ScanForTargets ();
-		}*/
 		if (timeToMovementUpdate <= 0) {
-			timeToMovementUpdate = timeToMovementUpdate;
-			UpdateMovement ();
-		}
+			if (updatesPerFrame < maxUpdatesPerFrame) {
+				UpdateMovement ();
+				timeToMovementUpdate = movementUpdateDelay;
+			}
+			updatesPerFrame++;
+		}                               
 		timeToMovementUpdate -= Time.deltaTime;
 		timeToNewTarget -= Time.deltaTime;
 	}
 
-	void OnDisable () {
-		thread.Abort ();
+	void LateUpdate () {
+		updatesPerFrame = 0;
+	}
+
+	void FixedUpdate () {
+		if (weaponTarget != null) {
+			weapons.Fire ();
+		}
 	}
 
 	void OnApplicationQuit () {
-		thread.Abort ();
+		scanThread.Abort ();
 	}
 
 	void OnDestroy () {
-		thread.Abort ();
+		scanThread.Abort ();
 	}
 	
 	void TargetScan () {
@@ -97,11 +116,13 @@ public class EnemyAI : MonoBehaviour {
 					}
 					print ("Player in rage of " + ownName +  " (" +")");
 					curretTarget = target;
+					weaponTarget = target;
 					hasPriorityTarget = true;
 				}
 			}
 
 			if (!hasPriorityTarget) {
+				weaponTarget = null;
 				if (curretTarget == null) {
 					timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
 					curretTarget = EnemyTarget.instance.GetNewRandomTarget ();
@@ -112,9 +133,9 @@ public class EnemyAI : MonoBehaviour {
 					}
 				}
 			}
-			print (curretTarget.position);
+			//print (curretTarget.position);
 
-			print (thread.Name);
+			//print (thread.Name);
 			Thread.Sleep (timeToWait);
 		}
 	}
@@ -122,8 +143,35 @@ public class EnemyAI : MonoBehaviour {
 	void UpdateMovement () {
 		if (canMove) {
 			if (curretTarget != null) {
-				transform.LookAt (curretTarget.position);
-				movementVector.z = 1f; 
+				if (weaponTarget != null) {
+					transform.LookAt (weaponTarget.position);
+				} else {
+					//transform.LookAt (curretTarget.position);
+					Quaternion targetRotation = Quaternion.LookRotation (curretTarget.position - transform.position);
+					transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, 25 * Time.deltaTime);
+				}
+
+				float distance = Vector3.Distance (ownPosition, curretTarget.position);
+				if (debugInfo) {
+					print ("Distance to target: " + distance);
+				}
+
+				if (distance < 20) {
+					if (hasPriorityTarget) {
+						if (distance < 10) {
+							movementVector.z = -1f;
+						} else {
+							movementVector.z = 0f;
+							movementVector.y = 1 - Random.value *2;
+							movementVector.z = 1 - Random.value *2;
+						}
+					} else {
+						curretTarget = EnemyTarget.instance.GetNewRandomTargetExcluding (curretTarget);
+					}
+					
+				} else {
+					movementVector.z = Random.value * Random.value / 2; 
+				}
 				movementController.SetRotationVector (rotationVector);
 				movementController.SetMovementVector (movementVector);
 			}
