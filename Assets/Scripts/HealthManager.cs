@@ -13,12 +13,15 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	[SerializeField]
 	private ResistanceProfile resistanceProfile = new ResistanceProfile ();
 	public EnergyBar healthBar;
+	public Transform deathEffect;
 
 	void Start () {
 		currentHealth = maxHealth;
 		if (isPlayer) {
 			healthBar = GameObject.FindWithTag ("Player1Health").GetComponent<EnergyBar> ();
 
+		}
+		if (healthBar != null) {
 			healthBar.valueMax = (int) maxHealth;
 		}
 	}
@@ -27,6 +30,10 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (currentHealth <= 0) {
 			isAlive = false;
 
+			if (deathEffect != null) {
+				Instantiate (deathEffect, transform.position, transform.rotation);
+			}
+
 			if (!isPlayer) {
 				Destroy (this.gameObject);
 			} else  {
@@ -34,7 +41,7 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 				GetComponent<PlayerData> ().Respawn ();
 			}
 		}
-		if (isPlayer) {
+		if (healthBar != null) {
 			if (currentHealth < 0) {
 				healthBar.valueCurrent = 0;
 			}

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class EnemyTarget : MonoBehaviour{
+public class EnemyTarget : MonoBehaviour {
 
 	public static EnemyTarget instance;
 
@@ -60,7 +60,7 @@ public class EnemyTarget : MonoBehaviour{
 		while (true) {
 			foreach (Target t in instance.targets) {
 				if (!t.persistent) {
-					t.lifeTime -= Time.deltaTime;
+					t.lifeTime -= 0.5f;
 					if (t.lifeTime <= 0) {
 						instance.targets.Remove (t);
 					}
@@ -73,7 +73,11 @@ public class EnemyTarget : MonoBehaviour{
 	IEnumerator UpdatePositions () {
 		while (true) {
 			foreach (Target t in instance.players) {
-				t.position = t.transform.position;
+				if (t.position != null) {
+					t.position = t.transform.position;
+				} else {
+					print ("A PLAYER SHOULD NEVER GET DESTROYED!");
+				}
 			}
 			yield return new WaitForSeconds (0.1f);
 		}

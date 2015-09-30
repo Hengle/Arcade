@@ -129,12 +129,10 @@ public class GameManager : MonoBehaviour {
 				time -= 0.1f;
 				yield return new WaitForSeconds (0.1f);
 			}
-			go.SetActive (true);
-			go.transform.position = WorldManager.instance.playerSpawnPoint.position;
-			
 			respawnText.gameObject.SetActive (false);
-
+			go.SetActive (true);
 		}
+
 		yield return null;
 	}
 

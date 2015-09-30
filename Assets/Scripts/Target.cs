@@ -17,6 +17,14 @@ public class Target : ITarget {
 		position = t.position;
 	}
 
+	public Target (Transform t, Vector3 pos, bool b, float l) {
+		transform = t;
+		persistent = b;
+		lifeTime = l;
+		dynamic = false;
+		position = pos;
+	}
+
 	public Target (Transform t, bool b, float l) {
 		transform = t;
 		persistent = b;

@@ -70,8 +70,9 @@ public class InputController : MonoBehaviour {
 			movement.x = Input.GetAxis ("Horizontal");
 			movement.z = Input.GetAxis ("Vertical");
 
-			rotation.x = (Input.mousePosition.x >= 0.15) ? Input.mousePosition.x : 0;
-			rotation.y = (Input.mousePosition.x >= 0.15) ? Input.mousePosition.y : 0;
+			float mouseX = Input.GetAxis ("Mouse X"), mouseY = Input.GetAxis ("Mouse Y");
+			rotation.x = (mouseX >= 0.15 || mouseX <= -0.15) ? mouseX : 0;
+			rotation.y = (mouseY >= 0.15 || mouseY <= -0.15) ? mouseY : 0;
 			break;
 		case ControlType.PS:
 			movement.x = Input.GetAxis ("ControllerXBOXLX" + pd.Index);

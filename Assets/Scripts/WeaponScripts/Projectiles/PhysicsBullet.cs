@@ -6,10 +6,9 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 	[SerializeField]
 	private float launchForce;
 
-	[SerializeField]
 	private Rigidbody rb;
-	[SerializeField]
 	private CapsuleCollider col;
+	private LineRenderer lr;
 	[SerializeField]
 	private DamageProfile damageProfile = new DamageProfile ();
 
@@ -18,10 +17,35 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 	public bool hasSecondaryDamage;
 
 	private Collider ignored;
+	private bool hitScanned = false;
+	private RaycastHit hit;
+
+
+	void Awake () {
+		rb = GetComponent<Rigidbody> ();
+		col = GetComponent<CapsuleCollider> ();
+		lr = GetComponent<LineRenderer> ();
+	}
 
 	void Start () {
 		rb.AddForce (transform.forward * launchForce);
 		Debug.Log ("Piercing Damage: " + damageProfile.PiercingDamage);
+	}
+
+	void Update () {
+		lr.SetPosition (0, transform.position);
+		lr.SetPosition (1, transform.position - transform.forward * (rb.velocity.z < 0 ? -rb.velocity.z /10 : rb.velocity.z /10));
+	}
+
+	void FixedUpdate () {
+		if (!hitScanned) {
+			Ray ray = new Ray (transform.position, transform.forward);
+			Physics.Raycast (ray, out hit, rb.velocity.z /2);
+
+		} else {
+			transform.position = hit.point;
+			OnTriggerEnter (hit.collider);
+		}
 	}
 
 	void OnTriggerEnter (Collider other) {
@@ -40,7 +64,7 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 			}
 			
 			if (hasHitEffect) {
-				Instantiate (hitEffect, transform.position - transform.forward, Quaternion.identity);
+				Instantiate (hitEffect, transform.position - transform.forward /2, Quaternion.identity);
 			}
 			
 			Destroy (this.gameObject);
