@@ -77,8 +77,8 @@ public class InputController : MonoBehaviour {
 		case ControlType.PS:
 			movement.x = Input.GetAxis ("ControllerXBOXLX" + pd.Index);
 			movement.y = Input.GetAxis ("ControllerXBOXLY" + pd.Index);
-			movement.z = Input.GetButton ("joystick button 6") ? 1 : 0;
-			
+			movement.z = Input.GetKey (KeyCode.JoystickButton6) ? 1 : 0;
+			1
 			rotation.x = Input.GetAxis ("ControllerPSRX" + pd.Index);
 			rotation.y = Input.GetAxis ("ControllerPSRY" + pd.Index);
 			break;
