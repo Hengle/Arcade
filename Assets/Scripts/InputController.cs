@@ -75,10 +75,10 @@ public class InputController : MonoBehaviour {
 			rotation.y = (mouseY >= 0.15 || mouseY <= -0.15) ? mouseY : 0;
 			break;
 		case ControlType.PS:
-			movement.x = Input.GetAxis ("ControllerXBOXLX" + pd.Index);
-			movement.y = Input.GetAxis ("ControllerXBOXLY" + pd.Index);
+			movement.x = Input.GetAxis ("ControllerPSLX" + pd.Index);
+			movement.y = Input.GetAxis ("ControllerPSLY" + pd.Index);
 			movement.z = Input.GetKey (KeyCode.JoystickButton6) ? 1 : 0;
-			1
+
 			rotation.x = Input.GetAxis ("ControllerPSRX" + pd.Index);
 			rotation.y = Input.GetAxis ("ControllerPSRY" + pd.Index);
 			break;
@@ -104,10 +104,10 @@ public class InputController : MonoBehaviour {
 
 			break;
 		case ControlType.PS:
-			if (Input.GetButton ("joystick button 7")) {
+			if (Input.GetKey (KeyCode.JoystickButton7)) {
 				wc.FirePrimary ();
 			}
-			if (Input.GetButton ("joystic button 5")) {
+			if (Input.GetKey (KeyCode.JoystickButton5)) {
 				wc.FireSecondary ();
 			}
 			break;
