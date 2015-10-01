@@ -10,7 +10,7 @@ public class InputController : MonoBehaviour {
 
 	// References
 	IMovementController mc;
-	WeaponController wc;
+	WeaponController weaponController;
 	PlayerData pd;
 
 	// Inputs
@@ -18,7 +18,7 @@ public class InputController : MonoBehaviour {
 	Vector3 rotation = Vector3.zero;
 
 	// Variables
-	public ControlType inputDevice;
+	public ControlType inputType;
 
 	public float InputVerical {
 		get {return movement.z;}
@@ -26,38 +26,56 @@ public class InputController : MonoBehaviour {
 	public float InputHorizontal {
 		get {return movement.x;}
 	}
-	
-	// Use this for initialization
-	void Start () {
+
+	void Awake () {
 		mc = GetComponent<IMovementController> ();
-		wc = GetComponent<WeaponController> ();
+		weaponController = GetComponent<WeaponController> ();
 		pd = GetComponent<PlayerData> ();
+	}
+
+	void Start () {
+		int input = PlayerPrefs.GetInt ("InputType");
+		print ("Input Index:" +input);
+		switch (input) {
+		case (int) ControlType.KEYBOARD:
+			inputType = ControlType.KEYBOARD;
+			break;
+		case (int) ControlType.PS:
+			inputType = ControlType.PS;
+			break;
+		case (int)ControlType.XBOX:
+			inputType = ControlType.XBOX;
+			break;
+		default:
+			inputType = ControlType.KEYBOARD;
+			break;
+		}
 	}
 	
 	void Update () {
 		if (mc != null) {
 			GetMovementInput ();
 		}
-		if (wc != null) {
+		if (weaponController != null) {
 			GetWeapons ();
 		}
 	}
-
+	
 	void OnGameStart () {
 		int input = PlayerPrefs.GetInt ("InputType");
-		print (input);
+		print ("Input Index:" +input);
 		switch (input) {
 		case (int) ControlType.KEYBOARD:
-			inputDevice = ControlType.KEYBOARD;
+			inputType = ControlType.KEYBOARD;
 			break;
 		case (int) ControlType.PS:
-			inputDevice = ControlType.PS;
+			inputType = ControlType.PS;
 			break;
 		case (int)ControlType.XBOX:
-			inputDevice = ControlType.XBOX;
+			inputType = ControlType.XBOX;
 			break;
 		default:
-			inputDevice = ControlType.KEYBOARD;
+			inputType = ControlType.KEYBOARD;
 			break;
 		}
 	}
@@ -65,7 +83,7 @@ public class InputController : MonoBehaviour {
 	void GetMovementInput () {
 		// ADD CHECK FOR PLAYER
 
-		switch (inputDevice) {
+		switch (inputType) {
 		case ControlType.KEYBOARD:
 			movement.x = Input.GetAxis ("Horizontal");
 			movement.z = Input.GetAxis ("Vertical");
@@ -91,7 +109,7 @@ public class InputController : MonoBehaviour {
 			break;
 		default: 
 			print ("No Controller set!");
-			inputDevice = ControlType.KEYBOARD;
+			inputType = ControlType.KEYBOARD;
 			break;
 		}
 		mc.SetRotationVector (rotation);
@@ -99,21 +117,21 @@ public class InputController : MonoBehaviour {
 	}
 
 	void GetWeapons () {
-		switch (inputDevice) {
+		switch (inputType) {
 		case ControlType.KEYBOARD:
 
 			break;
 		case ControlType.PS:
 			if (Input.GetKey (KeyCode.Joystick8Button7)) {
-				wc.FirePrimary ();
+				weaponController.FirePrimary ();
 			}
 			if (Input.GetKey (KeyCode.Joystick8Button5)) {
-				wc.FireSecondary ();
+				weaponController.FireSecondary ();
 			}
 			break;
 		case ControlType.XBOX:
 			if (Input.GetAxis ("TriggersXBOX1") < -0.2) {
-				wc.FirePrimary ();
+				weaponController.FirePrimary ();
 			}
 			/*if (Input.GetAxis ("TriggersXBOX1") > 0.2) {
 				wc.FireSecondary ();
