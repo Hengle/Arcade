@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
 	public AudioClip spaceMusic;
 
 	public Text respawnText;
+	public GameObject InGameMenu;
 
 	public GameState CurrentGameState {
 		get {return gameState;}
@@ -31,14 +32,16 @@ public class GameManager : MonoBehaviour {
 	private int currentLevel = 0;
 	private bool mapEndScreen = false;
 
+	bool levelLoadingDone = false;
+
+	public int LevelIndex {
+		get {return currentLevel;}
+	}
+
 	void Awake () {
 		if (instance == null) {
-			if (Application.loadedLevel == 1) {
-				StartCoroutine (AddPlayerTargets ());
-			}
 			instance = this;
 		} else {
-			print ("GAME MANGER ALREDY EXISTS");
 			Destroy (this.gameObject);
 		}
 		if (players == null) {
@@ -46,10 +49,18 @@ public class GameManager : MonoBehaviour {
 		}
 		audioSource = GetComponent<AudioSource> ();
 	}
+
 	void Start () {
-		Debug.Log ("Number of players: " + players.Length);
 		if (Application.loadedLevel == 1) {
 			SetGameState (GameState.GAME);
+		}
+	}
+
+	void Update () {
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			if (CurrentGameState ==GameState.GAME) {
+				InGameMenu.SetActive (!InGameMenu.activeInHierarchy);
+			}
 		}
 	}
 
@@ -57,6 +68,8 @@ public class GameManager : MonoBehaviour {
 		Debug.Log ("Updating Game State (" + gameState + ")");
 		switch (gameState) {
 		case GameState.LOAD_LEVEL:
+			StopCoroutine ("LoadLevel");
+			StartCoroutine ("LoadLevel");
 			break;
 		case GameState.GAME:
 			StartGame ();
@@ -71,12 +84,12 @@ public class GameManager : MonoBehaviour {
 
 	public void StartSinglePlayer () {
 		instance.players = new PlayerData[1];
-		StartCoroutine ("LoadLevel");
+		SetGameState (GameState.LOAD_LEVEL);
 	}
 
 	public void StartCoop () {
 		instance.players = new PlayerData[2];
-		StartCoroutine ("LoadLevel");
+		SetGameState (GameState.LOAD_LEVEL);
 	}
 
 	public void StartRespawnTimer (GameObject go, float time) {
@@ -109,9 +122,12 @@ public class GameManager : MonoBehaviour {
 
 	// Called on every GameObject once game level has been loaded
 	void OnStartGame () {
+		StartCoroutine (AddPlayerTargets ());
 		audioSource.clip = spaceMusic;
 		audioSource.enabled = true;
-		respawnText.gameObject.SetActive (false);
+		if (respawnText != null) {
+			respawnText.gameObject.SetActive (false);
+		}
 	}
 
 	public void ExitToWindows () {
@@ -137,12 +153,15 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator LoadLevel () {
-		SetGameState (GameState.LOAD_LEVEL);
-		yield return new WaitForSeconds (0.1f);
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnLoadLevel", SendMessageOptions.DontRequireReceiver);
+		}
+
+		
 		AsyncOperation async = Application.LoadLevelAsync (1);
 		yield return async;
-		Debug.Log ("Loading Complete");
-		SetGameState (GameState.GAME);
+		levelLoadingDone = true;
 	}
 
 	IEnumerator AddPlayerTargets () {
@@ -150,7 +169,7 @@ public class GameManager : MonoBehaviour {
 		
 		foreach (PlayerData pd in instance.players) {
 			print (pd.transform.name);
-			EnemyTarget.AddTarget (pd.transform, true);
+			PathfindingManager.AddTarget (pd.transform, true);
 		}
 
 	}

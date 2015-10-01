@@ -98,11 +98,27 @@ public class InputController : MonoBehaviour {
 	}
 
 	void GetWeapons () {
-		if (Input.GetAxis ("TriggersXBOX1") < -0.2) {
-			wc.FirePrimary ();
+		switch (inputDevice) {
+		case ControlType.KEYBOARD:
+
+			break;
+		case ControlType.PS:
+			if (Input.GetButtonDown ("Trigger R2")) {
+				wc.FirePrimary ();
+			}
+			if (Input.GetButtonDown ("Trigger L2")) {
+				wc.FireSecondary ();
+			}
+			break;
+		case ControlType.XBOX:
+			if (Input.GetAxis ("TriggersXBOX1") < -0.2) {
+				wc.FirePrimary ();
+			}
+			/*if (Input.GetAxis ("TriggersXBOX1") > 0.2) {
+				wc.FireSecondary ();
+			}*/
+			break;
 		}
-		if (Input.GetAxis ("TriggersXBOX1") > 0.2) {
-			wc.FireSecondary ();
-		}
+
 	}
 }

@@ -113,8 +113,11 @@ public class EnemyAI : MonoBehaviour {
 				if (timeSincePrioritytarget > 10f) {
 					curretTarget = new Target (hit.transform, false, 5f);
 					timeSincePrioritytarget = 0f;
+					hasPriorityTarget = true;
 				} else {
-					curretTarget = new Target (transform, transform.position -transform.forward * Random.Range (200, 500) + transform.right * Random.Range (-200, 200)  + transform.up * Random.Range (-200, 200), false, 10f);
+					hasPriorityTarget = false;
+					curretTarget = null;
+					//curretTarget = new Target (transform, transform.position -transform.forward * Random.Range (200, 500) + transform.right * Random.Range (-200, 200)  + transform.up * Random.Range (-200, 200), false, 10f);
 				}
 				overrideManouverRange = true;
 				overrideDistance = Vector3.Distance (hit.point, hit.transform.position);
@@ -135,37 +138,37 @@ public class EnemyAI : MonoBehaviour {
 		System.Random random = new System.Random();
 
 		while (true) {
-			hasPriorityTarget = false;
-
-			//print ("Number of player Targets: " + EnemyTarget.instance.PlayerTargets.Length);
-			foreach (Target target in EnemyTarget.instance.PlayerTargets) {
-				float distance = Vector3.Distance (ownPosition, target.position);
+			if (curretTarget == null) {
+				foreach (Target target in PathfindingManager.instance.PlayerTargets) {
+					float distance = Vector3.Distance (ownPosition, target.position);
+					
+					if (distance <= aggressionRange) {
+						if (hasPriorityTarget) {
+							//if (distance > Vector3.Distance (transform.position, curretTarget.position))  {
+							//	curretTarget = new Target (pd.transform, false, Random.Range (aggressionTime.x, aggressionTime.y));
+							//
+						}
+						//print ("Player in rage of " + ownName +  " (" +")");
+						curretTarget = target;
+						weaponTarget = target;
+						hasPriorityTarget = true;
+					}
+				}
 				
-				if (distance <= aggressionRange) {
-					if (hasPriorityTarget) {
-						//if (distance > Vector3.Distance (transform.position, curretTarget.position))  {
-						//	curretTarget = new Target (pd.transform, false, Random.Range (aggressionTime.x, aggressionTime.y));
-						//
+				if (!hasPriorityTarget) {
+					weaponTarget = null;
+					if (curretTarget == null) {
+						timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
+						curretTarget = PathfindingManager.instance.GetNewRandomTarget ();
+					} else {
+						if (timeToNewTarget <= 0) {
+							timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
+							curretTarget = PathfindingManager.instance.GetNewRandomTarget ();
+						}
 					}
-					//print ("Player in rage of " + ownName +  " (" +")");
-					curretTarget = target;
-					weaponTarget = target;
-					hasPriorityTarget = true;
 				}
 			}
 
-			if (!hasPriorityTarget) {
-				weaponTarget = null;
-				if (curretTarget == null) {
-					timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
-					curretTarget = EnemyTarget.instance.GetNewRandomTarget ();
-				} else {
-					if (timeToNewTarget <= 0) {
-						timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
-						curretTarget = EnemyTarget.instance.GetNewRandomTarget ();
-					}
-				}
-			}
 			//print (curretTarget.position);
 
 			//print (thread.Name);
@@ -181,11 +184,11 @@ public class EnemyAI : MonoBehaviour {
 
 				if (weaponTarget != null) {
 					targetRotation = Quaternion.LookRotation (weaponTarget.position - transform.position);
-					rotTime = 10f;
+					rotTime = 100f;
 				} else {
 					//transform.LookAt (curretTarget.position);
 					targetRotation = Quaternion.LookRotation (curretTarget.position - transform.position);
-					rotTime = 25f;
+					rotTime = 250f;
 				}
 				transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, rotTime);
 
@@ -232,7 +235,7 @@ public class EnemyAI : MonoBehaviour {
 						} else {
 							if (distance < manouverDistance * 0.2f) {
 								print ("Refreshin target");
-								curretTarget = EnemyTarget.instance.GetNewRandomTargetExcluding (curretTarget);
+								curretTarget = PathfindingManager.instance.GetNewRandomTargetExcluding (curretTarget);
 							}
 						}
 					}
