@@ -42,7 +42,6 @@ public class PlayMenuLogic : MonoBehaviour {
 	void InitilizeButtons () {
 		if (buttonContainer != null) {
 			buttonContainer.SetActive (true);
-			buttonContainer.transform.FindChild ("ButtonSolo").GetComponent<Button> ().Select ();
 		}
 		buttonsInitialized = true;
 	}

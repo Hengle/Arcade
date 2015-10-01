@@ -5,7 +5,7 @@ using System.Collections;
 public class PlayerData : MonoBehaviour {
 	
 	// Variables
-	public string name;
+	public string playerName;
 	public int lives;
 
 	public bool canRespawn;
@@ -15,10 +15,10 @@ public class PlayerData : MonoBehaviour {
 	public GameObject livesBar;
 
 	public int Index {
-		get {return index;}
+		get {return index+1;}
 	}
 	public int NumPlayers {
-		get {return GameManager.players.Length;}
+		get {return GameManager.instance.Players.Length;}
 	}
 	public bool CanRespawn {
 		get {return canRespawn;}
@@ -30,17 +30,17 @@ public class PlayerData : MonoBehaviour {
 		livesBar.GetComponent<RepeatedRendererUGUI> ().repeatCount = lives;
 		livesBar.GetComponent<EnergyBar> ().valueCurrent = lives;
 
-		for (int i = 0; i < GameManager.players.Length; i++) {
-			if (GameManager.players[i] == null) {
-				GameManager.players[i] = this;
-				index = i+1;
+		for (int i = 0; i < GameManager.instance.Players.Length; i++) {
+			if (GameManager.instance.Players[i] == null) {
+				GameManager.instance.Players[i] = this;
+				index = i;
 				break;
 			}
 		}
 	}
 
 	void OnDestroyed () {
-		GameManager.players[index] = null;
+		GameManager.instance.Players[index] = null;
 	}
 
 	public bool Respawn () {
@@ -50,6 +50,8 @@ public class PlayerData : MonoBehaviour {
 		if (lives > 0) {
 			GameManager.instance.StartRespawnTimer (gameObject, respawnTime);
 			return true;
+		} else {
+			GameManager.instance.StartRespawnTimer (gameObject, -1);
 		}
 		return false;
 	}

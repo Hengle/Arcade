@@ -7,6 +7,8 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
 	[SerializeField]
 	private float fireRate;
+	[SerializeField]
+	private float accuracy;
 	private float coolDown;
 	private int spawnIndex = 0;
 
@@ -27,7 +29,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 			projectileSpawn = new Transform[] {transform.FindChild ("ProjectileSpawn")};
 		}
 
-		Debug.Log ("Has Multi Spawn: " + hasMultiSpawn + ", Num Spawns: " + projectileSpawn.Length);
+		//Debug.Log ("Has Multi Spawn: " + hasMultiSpawn + ", Num Spawns: " + projectileSpawn.Length);
 	}
 
 	void Update () {
@@ -53,8 +55,11 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 
 	public void Fire () {
 		if (coolDown <= 0) {
+			Transform go;
 			coolDown = 1 / fireRate;
-			Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.root.rotation);
+			print (weaponProjectile.name);
+			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.rotation);
+			print ("IS: " +go.name);
 
 			if (spawnIndex == projectileSpawn.Length -1) {
 				spawnIndex = 0;

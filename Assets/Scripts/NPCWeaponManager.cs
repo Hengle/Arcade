@@ -14,16 +14,20 @@ public class NPCWeaponManager : MonoBehaviour {
 
 		for (int i = 0; i < weaponMounts.Length; i++) {
 			weaponSystems[i] = weaponMounts[i].transform.GetChild (0).GetComponent<IWeapon> ();
-			Debug.Log (transform.root.name + " assigned with waepon: " + weaponSystems[i]);
 		}
 
 		if (testWeapons) {
 			StartCoroutine ("WeaponTest");
 		}
 	}
-	
-	void FixedUpdate () {
 
+	public void Fire () {
+
+		foreach (IWeapon wep in weaponSystems) {
+			Debug.DrawLine (transform.position, transform.position + transform.forward * 200, Color.red);
+
+			wep.Fire ();
+		}
 	}
 
 	IEnumerator WeaponTest () {

@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MovementControllerSpace : MonoBehaviour, IMovementController {
+public class MovementControllerSpace : MonoBehaviour, IMovementController, IPausable {
 
 	// References
 	private Rigidbody rb;
-	
+
+	public bool is3D = false;
+
 	// Movement Values
 	[SerializeField]
 	private float maxVelocity = 3f;
@@ -33,19 +35,15 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 		float velocityMagnitude = rb.velocity.magnitude;
 		float angle;
 
-		if (rotVector.magnitude > 0.1) {
-			angle = Vector3.Angle (transform.right, rotVector);
-			if (angle < 90) {
-				rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * rotationForce.y);
-			} else {
-				rb.AddTorque (transform.up * Vector3.Angle (transform.forward, rotVector) * -rotationForce.y);
-			}
-		}
+		rb.AddForce (transform.forward * moveInput.z * accelerationForce);
+		rb.AddForce (transform.up * moveInput.y * accelerationForce * 0.7f);
+		rb.AddForce (transform.right * moveInput.x * accelerationForce * 0.7f);
 
-		if (moveInput.magnitude > 0.1f) {
-			rb.AddForce (accelerationForce * moveInput);
-		}
+		rb.AddTorque (transform.forward * moveInput.x * -rotationForce.z);
 
+		rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
+		rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
+	
 		if (velocityMagnitude > maxVelocity) {
 			rb.velocity = rb.velocity.normalized * maxVelocity;
 			
@@ -54,7 +52,7 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 		}
 		
 		//transform.rotation = Quaternion.Euler (transform.rotation.x, transform.rotation.y, rb.velocity.x * -tilt);
-				
+
 		rb.position.Set
 		(
 			Mathf.Clamp (rb.position.x, boundary.xMin, boundary.xMax), 
@@ -62,7 +60,11 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController {
 			Mathf.Clamp (rb.position.z, boundary.zMin, boundary.zMax)
 		);
 	}
-	
+
+	void OnPauseGame () {
+
+	}
+
 	public void SetMovementVector (Vector3 vector) {
 		moveInput = vector;
 	}
