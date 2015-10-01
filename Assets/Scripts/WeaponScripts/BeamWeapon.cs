@@ -50,7 +50,8 @@ public class BeamWeapon : MonoBehaviour, IWeapon {
 		if (coolDown <= 0) {
 			coolDown = 1 / fireRate;
 			audio.Play ();
-			Instantiate (weaponEffect, projectileSpawn.transform.position, transform.rotation);
+			Transform t = (Transform) Instantiate (weaponEffect, projectileSpawn.transform.position, transform.rotation);
+			t.SetParent (projectileSpawn.transform);
 		}
 	}
 }

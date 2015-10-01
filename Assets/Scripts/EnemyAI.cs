@@ -30,11 +30,17 @@ public class EnemyAI : MonoBehaviour {
 	private Range targetHoldTime = new Range (6, 15);
 	private float timeToNewTarget = 0.1f;
 	private bool hasPriorityTarget = false;
+	float timeSincePrioritytarget = 0f;
 	[SerializeField]
 	private float movementUpdateDelay = 0.2f;
 	private float timeToMovementUpdate = 0.2f;
 	[SerializeField]
 	private bool canMove = true;
+	public bool overrideManouverRange = false;
+	public float overrideDistance;
+	public float manouverDistance = 100f;
+	private float manouverDistanceBackup;
+
 	private Vector3 movementVector = Vector3.zero;
 	private Vector3 rotationVector = Vector3.zero;
 
@@ -63,7 +69,7 @@ public class EnemyAI : MonoBehaviour {
 		//moveThread = new Thread (new ThreadStart (UpdateMovement));
 		//moveThread.Name = ("Movement Update for: " + transform.name);
 		//moveThread.Start ();
-
+		manouverDistanceBackup = manouverDistance;
 		StartCoroutine (UpdatePosition (transform));
 	}
 
@@ -77,6 +83,7 @@ public class EnemyAI : MonoBehaviour {
 		}                               
 		timeToMovementUpdate -= Time.deltaTime;
 		timeToNewTarget -= Time.deltaTime;
+		timeSincePrioritytarget -= Time.deltaTime;
 	}
 
 	void LateUpdate () {
@@ -84,8 +91,37 @@ public class EnemyAI : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		if (weaponTarget != null) {
-			weapons.Fire ();
+		Ray ray = new Ray (transform.position, transform.forward);
+		Debug.DrawRay (transform.position, transform.forward * 350, Color.cyan);
+		RaycastHit hit;
+
+		if (Physics.Raycast (ray, out hit, 350)) {
+			overrideManouverRange = false;
+
+			if (hit.transform.tag.Equals ("Player")) {
+				weapons.Fire ();
+			} else if ( hit.transform.tag.Equals ("Asteroid")) {
+				weapons.Fire ();
+				if (weaponTarget != null) {
+					weaponTarget = new Target (hit.transform, false, 5f);
+				}
+			} else if ( hit.transform.tag.Equals ("PlayerBase")) {
+				weapons.Fire ();
+				if (weaponTarget != null) {
+					weaponTarget = new Target (hit.transform, false, 5f);
+				}
+				if (timeSincePrioritytarget > 10f) {
+					curretTarget = new Target (hit.transform, false, 5f);
+					timeSincePrioritytarget = 0f;
+					hasPriorityTarget = true;
+				} else {
+					hasPriorityTarget = false;
+					curretTarget = null;
+					//curretTarget = new Target (transform, transform.position -transform.forward * Random.Range (200, 500) + transform.right * Random.Range (-200, 200)  + transform.up * Random.Range (-200, 200), false, 10f);
+				}
+				overrideManouverRange = true;
+				overrideDistance = Vector3.Distance (hit.point, hit.transform.position);
+			}
 		}
 	}
 
@@ -102,37 +138,37 @@ public class EnemyAI : MonoBehaviour {
 		System.Random random = new System.Random();
 
 		while (true) {
-			hasPriorityTarget = false;
-
-			//print ("Number of player Targets: " + EnemyTarget.instance.PlayerTargets.Length);
-			foreach (Target target in EnemyTarget.instance.PlayerTargets) {
-				float distance = Vector3.Distance (ownPosition, target.position);
+			if (curretTarget == null) {
+				foreach (Target target in PathfindingManager.instance.PlayerTargets) {
+					float distance = Vector3.Distance (ownPosition, target.position);
+					
+					if (distance <= aggressionRange) {
+						if (hasPriorityTarget) {
+							//if (distance > Vector3.Distance (transform.position, curretTarget.position))  {
+							//	curretTarget = new Target (pd.transform, false, Random.Range (aggressionTime.x, aggressionTime.y));
+							//
+						}
+						//print ("Player in rage of " + ownName +  " (" +")");
+						curretTarget = target;
+						weaponTarget = target;
+						hasPriorityTarget = true;
+					}
+				}
 				
-				if (distance <= aggressionRange) {
-					if (hasPriorityTarget) {
-						//if (distance > Vector3.Distance (transform.position, curretTarget.position))  {
-						//	curretTarget = new Target (pd.transform, false, Random.Range (aggressionTime.x, aggressionTime.y));
-						//
+				if (!hasPriorityTarget) {
+					weaponTarget = null;
+					if (curretTarget == null) {
+						timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
+						curretTarget = PathfindingManager.instance.GetNewRandomTarget ();
+					} else {
+						if (timeToNewTarget <= 0) {
+							timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
+							curretTarget = PathfindingManager.instance.GetNewRandomTarget ();
+						}
 					}
-					//print ("Player in rage of " + ownName +  " (" +")");
-					curretTarget = target;
-					weaponTarget = target;
-					hasPriorityTarget = true;
 				}
 			}
 
-			if (!hasPriorityTarget) {
-				weaponTarget = null;
-				if (curretTarget == null) {
-					timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
-					curretTarget = EnemyTarget.instance.GetNewRandomTarget ();
-				} else {
-					if (timeToNewTarget <= 0) {
-						timeToNewTarget = random.Next (targetHoldTime.min, targetHoldTime.max);
-						curretTarget = EnemyTarget.instance.GetNewRandomTarget ();
-					}
-				}
-			}
 			//print (curretTarget.position);
 
 			//print (thread.Name);
@@ -143,35 +179,73 @@ public class EnemyAI : MonoBehaviour {
 	void UpdateMovement () {
 		if (canMove) {
 			if (curretTarget != null) {
+				Quaternion targetRotation;
+				float rotTime;
+
 				if (weaponTarget != null) {
-					transform.LookAt (weaponTarget.position);
+					targetRotation = Quaternion.LookRotation (weaponTarget.position - transform.position);
+					rotTime = 100f;
 				} else {
 					//transform.LookAt (curretTarget.position);
-					Quaternion targetRotation = Quaternion.LookRotation (curretTarget.position - transform.position);
-					transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, 25 * Time.deltaTime);
+					targetRotation = Quaternion.LookRotation (curretTarget.position - transform.position);
+					rotTime = 250f;
 				}
+				transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, rotTime);
 
 				float distance = Vector3.Distance (ownPosition, curretTarget.position);
 				if (debugInfo) {
 					print ("Distance to target: " + distance);
 				}
 
-				if (distance < 20) {
+				if (overrideManouverRange) {
+					distance -= overrideDistance;
+					manouverDistance = manouverDistanceBackup + overrideDistance;
+				} else {
+					manouverDistance = manouverDistanceBackup;
+				}
+
+				if (distance < manouverDistance) {
+
 					if (hasPriorityTarget) {
-						if (distance < 10) {
+
+						if (distance < manouverDistance * 0.1f) {
 							movementVector.z = -1f;
+							
+						} else if (distance < manouverDistance * 0.15f) {
+							movementVector.z = -0.8f;
+						} else if (distance < manouverDistance * 0.3f) {
+							movementVector.z = -0.3f;
+
+						} else if (distance < manouverDistance * 0.7f) {
+							movementVector.z = 0.2f - Random.value / 4;
+
 						} else {
 							movementVector.z = 0f;
-							movementVector.y = 1 - Random.value *2;
-							movementVector.z = 1 - Random.value *2;
 						}
+
 					} else {
-						curretTarget = EnemyTarget.instance.GetNewRandomTargetExcluding (curretTarget);
+						if (overrideManouverRange) {
+							if (distance < manouverDistance * 0.3f) {
+								movementVector.z = -0.8f;
+							} else if (distance < manouverDistance * 0.7f) {
+								movementVector.z = 0.2f - Random.value / 4;
+							} else {
+								movementVector.z = -0.1f;
+							}
+						} else {
+							if (distance < manouverDistance * 0.2f) {
+								print ("Refreshin target");
+								curretTarget = PathfindingManager.instance.GetNewRandomTargetExcluding (curretTarget);
+							}
+						}
 					}
+					movementVector.y = 1 - Random.value *2;
+					movementVector.z = 1 - Random.value *2;
 					
 				} else {
-					movementVector.z = Random.value * Random.value / 2; 
+					movementVector.z = 1f; 
 				}
+
 				movementController.SetRotationVector (rotationVector);
 				movementController.SetMovementVector (movementVector);
 			}

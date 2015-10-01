@@ -36,6 +36,9 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 		float angle;
 
 		rb.AddForce (transform.forward * moveInput.z * accelerationForce);
+		rb.AddForce (transform.up * moveInput.y * accelerationForce * 0.7f);
+		rb.AddForce (transform.right * moveInput.x * accelerationForce * 0.7f);
+
 		rb.AddTorque (transform.forward * moveInput.x * -rotationForce.z);
 
 		rb.AddTorque (transform.up * rotVector.x * rotationForce.x);

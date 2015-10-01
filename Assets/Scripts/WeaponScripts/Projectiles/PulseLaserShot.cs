@@ -33,5 +33,9 @@ public class PulseLaserShot : MonoBehaviour {
 		}
 	}
 
+	void Update () {
+		lr.SetPosition (0, transform.position);
+	}
+
 
 }
