@@ -4,12 +4,14 @@ using System.Collections.Generic;
 
 public class CameraFollow : MonoBehaviour {
 
-	public Vector3 cameraOffset;
+	public Vector3 cameraOffset = new Vector3 (0, 2, -8);
+	public float cameraResponsiveness = 3f;
 	public Vector3 defaultPosition = Vector3.zero;
 	private Transform player;
 
 	public float lookpointDistance = 1000f;
 	private Vector3 lookPoint;
+	Quaternion targetRotation;
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +24,8 @@ public class CameraFollow : MonoBehaviour {
 			lookPoint = player.transform.position + player.transform.forward * lookpointDistance;
 			transform.position = player.transform.position + player.TransformDirection (cameraOffset);
 			transform.LookAt (lookPoint);
+
+			transform.rotation = player.rotation;
 		} else {
 			transform.position = defaultPosition;
 		}

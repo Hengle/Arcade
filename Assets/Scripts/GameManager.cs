@@ -41,6 +41,14 @@ public class GameManager : MonoBehaviour {
 	void Awake () {
 		if (instance == null) {
 			instance = this;
+
+			if (GameObject.Find ("MenuCanvas") == null) {
+				UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+
+				foreach (GameObject go in objects) {
+					go.SendMessage ("OnLoadLevel", SendMessageOptions.DontRequireReceiver);
+				}
+			}
 		} else {
 			Destroy (this.gameObject);
 		}

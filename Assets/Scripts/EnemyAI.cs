@@ -246,12 +246,12 @@ public class EnemyAI : MonoBehaviour {
 					movementVector.z = 1f; 
 				}
 
-				movementController.SetRotationVector (rotationVector);
-				movementController.SetMovementVector (movementVector);
+				movementController.SetRotation (rotationVector);
+				movementController.SetMovement (movementVector);
 			}
 		} else {
-			movementController.SetRotationVector (Vector3.zero);
-			movementController.SetMovementVector (Vector3.zero);
+			movementController.SetRotation(Vector3.zero);
+			movementController.SetMovement (Vector3.zero);
 		}
 	}
 
