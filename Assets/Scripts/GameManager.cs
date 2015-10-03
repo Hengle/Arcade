@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 
 public class GameManager : MonoBehaviour {
+
+	public static List<LevelEndCondition> levelObjectives = new List<LevelEndCondition> ();
 
 	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL}
 	private static GameState gameState;
@@ -13,9 +16,18 @@ public class GameManager : MonoBehaviour {
 	// References
 	private PlayerData[] players;
 	private AudioSource audioSource;
+
+	[Header ("Audio")]
 	public AudioClip menuMusic;
 	public AudioClip spaceMusic;
 
+	// Variables
+	[SerializeField][Header ("Level Info")]
+	private int currentLevel = 0;
+	[ShowOnlyAttribute]
+	public bool levelCompleted = false;
+
+	[Header ("Obejcts")]
 	public Text respawnText;
 	public GameObject InGameMenu;
 
@@ -27,9 +39,11 @@ public class GameManager : MonoBehaviour {
 		get {return players;}
 	}
 
-	// Variables
-	[SerializeField]
-	private int currentLevel = 0;
+	public int CurrentLevel  {
+		get {return currentLevel;}
+	}
+
+
 	private bool mapEndScreen = false;
 
 	bool levelLoadingDone = false;
@@ -121,18 +135,26 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void StartGame () {
-		print ("Sending OnGameStart");
+		print ("Sending OnStartGame");
 		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnStartGame", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
+	// Called on every GameObject once Level Laoding Begins
+	void OnLoadLevel () {
+		currentLevel++;
+		AddLevelObjective ("Destory All Enemies");
+	}
+
 	// Called on every GameObject once game level has been loaded
 	void OnStartGame () {
 		StartCoroutine (AddPlayerTargets ());
+		StartCoroutine (CheckForLevelEnd ());
 		audioSource.clip = spaceMusic;
 		audioSource.enabled = true;
+
 		if (respawnText != null) {
 			respawnText.gameObject.SetActive (false);
 		}
@@ -141,6 +163,12 @@ public class GameManager : MonoBehaviour {
 	public void ExitToWindows () {
 		print ("Exiting");
 		Application.Quit ();
+	}
+
+	public LevelEndCondition AddLevelObjective (string name) {
+		LevelEndCondition endCondition = new LevelEndCondition (name);
+		levelObjectives.Add (endCondition);
+		return endCondition;
 	}
 	
 	IEnumerator RespawnTimer (GameObject go, float time) {
@@ -178,6 +206,31 @@ public class GameManager : MonoBehaviour {
 		foreach (PlayerData pd in instance.players) {
 			print (pd.transform.name);
 			PathfindingManager.AddTarget (pd.transform, true);
+		}
+	}
+
+	IEnumerator CheckForLevelEnd () {
+		bool isCompleted = false;
+		while (!isCompleted) {
+			isCompleted = true;
+			foreach (LevelEndCondition endCondition in levelObjectives) {
+				if (!endCondition.done) {
+					isCompleted = false;
+					break;
+				}
+			}
+			yield return new WaitForSeconds (0.1f);
+		}
+		levelCompleted = true;
+		yield return null;
+	}
+
+	public class LevelEndCondition {
+		public bool done = false;
+		public string name;
+
+		public LevelEndCondition (string _name) {
+			name = _name;
 		}
 
 	}

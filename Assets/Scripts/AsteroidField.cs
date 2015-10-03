@@ -9,9 +9,9 @@ public class AsteroidField : MonoBehaviour, IWorldGen {
 	public int minLevel = 0;
 
 	public int numAsterois = 200;
-	public Vector2 size = new Vector2 (40f, 250f);
+	public Vector2 asteroidSize = new Vector2 (40f, 250f);
 	public Vector2 distanceFromBase = new Vector2 (200, 1000);
-	public Transform[] asteroids;
+	public Transform[] asteroidPrefabs;
 
 
 	bool done;
@@ -28,14 +28,17 @@ public class AsteroidField : MonoBehaviour, IWorldGen {
 		print ("[WORLDGEN]: Starting Asteroid Field gen");
 		done = false;
 		int iterations = 0;
+		float sizeMult;
 
 		for(int i = 0; i < numAsterois; ++i) {
-			Transform t = (Transform) Instantiate (asteroids[Random.Range (0, asteroids.Length -1)]);
-			float x =  Random.Range (distanceFromBase.x, distanceFromBase.y);
-			
-			t.transform.position = Random.onUnitSphere * x;
-			
-			t.transform.localScale = Vector3.one * Random.Range (size.x, size.y);
+			float distance =  Random.Range (distanceFromBase.x, distanceFromBase.y);
+			Vector3 pos = Random.onUnitSphere * distanceFromBase.y -Random.onUnitSphere * distance;
+
+			Transform t = (Transform) Instantiate (asteroidPrefabs[Random.Range (0, asteroidPrefabs.Length -1)], pos, Quaternion.identity);
+
+			sizeMult = Random.Range (asteroidSize.x, asteroidSize.y);
+			t.transform.localScale = Vector3.one * sizeMult;
+			t.GetComponent<HealthManager> ().SetHealthMod (sizeMult / 100);
 			t.SetParent (this.transform);
 
 			iterations++;

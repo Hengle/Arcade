@@ -65,11 +65,11 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 
 	}
 
-	public void SetMovementVector (Vector3 vector) {
+	public void SetMovement (Vector3 vector) {
 		moveInput = vector;
 	}
 
-	public void SetRotationVector (Vector3 vector) {
+	public void SetRotation (Vector3 vector) {
 		rotVector = vector;
 	}
 }

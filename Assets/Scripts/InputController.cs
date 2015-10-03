@@ -112,8 +112,8 @@ public class InputController : MonoBehaviour {
 			inputType = ControlType.KEYBOARD;
 			break;
 		}
-		mc.SetRotationVector (rotation);
-		mc.SetMovementVector (movement);
+		mc.SetRotation (rotation);
+		mc.SetMovement (movement);
 	}
 
 	void GetWeapons () {

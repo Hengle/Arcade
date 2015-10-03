@@ -9,6 +9,8 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	private float currentHealth;
 	private bool isAlive = true;
 	public bool isPlayer = false;
+	public float modelRemoveDelay = 1f;
+	private bool deathInitialized = false;
 
 	[SerializeField]
 	private ResistanceProfile resistanceProfile = new ResistanceProfile ();
@@ -27,6 +29,10 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	}
 
 	void Update () {
+		if (maxHealth < currentHealth) {
+			currentHealth = maxHealth;
+		}
+
 		if (currentHealth <= 0) {
 			isAlive = false;
 
@@ -35,9 +41,14 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 			}
 
 			if (!isPlayer) {
-				Destroy (this.gameObject);
+				deathInitialized = true;
+
+				if (modelRemoveDelay < 0) {
+					Destroy (this.gameObject);
+				}
+				modelRemoveDelay -= Time.deltaTime;
 			} else  {
-				transform.root.gameObject.SetActive (false);
+				transform.gameObject.SetActive (false);
 				GetComponent<PlayerData> ().Respawn ();
 			}
 		}
@@ -62,6 +73,10 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (1 - reduction > 0) {
 			currentHealth -= CalculateDamage (resistanceProfile, dp, 1 - reduction);
 		}
+	}
+
+	public void SetHealthMod (float mod) {
+		maxHealth *= mod;
 	}
 
 	public bool Respawn () {
