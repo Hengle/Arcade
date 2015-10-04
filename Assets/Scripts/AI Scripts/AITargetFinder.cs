@@ -87,6 +87,8 @@ public class AITargetFinder : MonoBehaviour {
 		}
 	}
 
+
+	// Target Scanner main loop
 	void TargetScan () {
 		TargetRequest request;
 

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 [RequireComponent (typeof (IMovementController))]
 public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 
-	public Range numTargetsToPatrol = new Range (3, 5);
 	public bool showPatrolRoute = false;
+	public Range numTargetsToPatrol = new Range (3, 5);
 
 	private List<Target> targetsToPatrol;
 	private IMovementController movementController;
