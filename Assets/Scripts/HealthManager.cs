@@ -17,6 +17,8 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	public EnergyBar healthBar;
 	public Transform deathEffect;
 
+	bool deathMessegeSent = false;
+
 	void Start () {
 		currentHealth = maxHealth;
 		if (isPlayer) {
@@ -36,12 +38,13 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (currentHealth <= 0) {
 			isAlive = false;
 
-			if (deathEffect != null) {
-				Instantiate (deathEffect, transform.position, transform.rotation);
-			}
-
 			if (!isPlayer) {
 				deathInitialized = true;
+
+				if (!deathMessegeSent) {
+					SendMessage ("OnDeath", SendMessageOptions.DontRequireReceiver);
+					deathMessegeSent = true;
+				}
 
 				if (modelRemoveDelay < 0) {
 					Destroy (this.gameObject);
@@ -62,7 +65,16 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 
 	void OnEnable () {
 		isAlive = true;
+		deathMessegeSent = false;
 		currentHealth = maxHealth;
+	}
+
+	void OnDeath () {
+		
+		if (deathEffect != null) {
+			Transform t = (Transform) Instantiate (deathEffect, transform.position, transform.rotation);
+			t.SetParent (transform);
+		}
 	}
 
 	public void Damage (DamageProfile dp) {

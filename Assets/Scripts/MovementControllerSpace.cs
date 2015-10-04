@@ -5,9 +5,7 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 
 	// References
 	private Rigidbody rb;
-
-	public bool is3D = false;
-
+	
 	// Movement Values
 	[SerializeField]
 	private float maxVelocity = 3f;
@@ -15,14 +13,17 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 	private float accelerationForce = 2f;
 	[SerializeField]
 	private Vector3 rotationForce = new Vector3 (0.0f, 100f, 0.0f);
-	[SerializeField]
-	private float tilt = 4f;
 	
 	private Vector3 moveInput = Vector3.zero;
 	private Vector3 rotVector = Vector3.zero;
 	Quaternion deltaRot;
 
 	private Boundary boundary;
+	private bool paused = false;
+
+	Vector3 savedVelocity;
+	Vector3 savedRotationVelocity;
+
 	
 	// Use this for initialization
 	void Start () {
@@ -32,37 +33,40 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 
 	// Update is called once per frame
 	void FixedUpdate () {
-		float velocityMagnitude = rb.velocity.magnitude;
-		float angle;
-
-		rb.AddForce (transform.forward * moveInput.z * accelerationForce);
-		rb.AddForce (transform.up * moveInput.y * accelerationForce * 0.7f);
-		rb.AddForce (transform.right * moveInput.x * accelerationForce * 0.7f);
-
-		rb.AddTorque (transform.forward * moveInput.x * -rotationForce.z);
-
-		rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
-		rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
-	
-		if (velocityMagnitude > maxVelocity) {
-			rb.velocity = rb.velocity.normalized * maxVelocity;
+		if (!paused) {
+			float velocityMagnitude = rb.velocity.magnitude;
+			float angle;
 			
-		} else if (velocityMagnitude < maxVelocity * -0.7f) {
-			rb.velocity = rb.velocity.normalized * maxVelocity * 0.7f;
+			rb.AddForce (transform.forward * moveInput.z * accelerationForce);
+			rb.AddForce (transform.up * moveInput.y * accelerationForce * 0.7f);
+			rb.AddForce (transform.right * moveInput.x * accelerationForce * 0.7f);
+			
+			rb.AddTorque (transform.forward * moveInput.x * -rotationForce.z);
+			
+			rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
+			rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
+			
+			if (velocityMagnitude > maxVelocity) {
+				rb.velocity = rb.velocity.normalized * maxVelocity;
+				
+			} else if (velocityMagnitude < maxVelocity * -0.7f) {
+				rb.velocity = rb.velocity.normalized * maxVelocity * 0.7f;
+			}
 		}
-		
-		//transform.rotation = Quaternion.Euler (transform.rotation.x, transform.rotation.y, rb.velocity.x * -tilt);
-
-		rb.position.Set
-		(
-			Mathf.Clamp (rb.position.x, boundary.xMin, boundary.xMax), 
-			0.0f, 
-			Mathf.Clamp (rb.position.z, boundary.zMin, boundary.zMax)
-		);
 	}
 
 	void OnPauseGame () {
+		savedVelocity = rb.velocity;
+		savedRotationVelocity = rb.angularVelocity;
+		rb.velocity = Vector3.zero;
+		rb.angularVelocity = Vector3.zero;
+		paused = true;
+	}
 
+	void OnResumeGame () {
+		rb.velocity = savedVelocity;
+		rb.angularVelocity = savedRotationVelocity;
+		paused = false;
 	}
 
 	public void SetMovement (Vector3 vector) {

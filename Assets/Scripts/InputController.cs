@@ -20,6 +20,8 @@ public class InputController : MonoBehaviour {
 	// Variables
 	public ControlType inputType;
 
+	private bool paused = false;
+
 	public float InputVerical {
 		get {return movement.z;}
 	}
@@ -53,11 +55,13 @@ public class InputController : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (mc != null) {
-			GetMovementInput ();
-		}
-		if (weaponController != null) {
-			GetWeapons ();
+		if (!paused) {
+			if (mc != null) {
+				GetMovementInput ();
+			}
+			if (weaponController != null) {
+				GetWeapons ();
+			}
 		}
 	}
 	
@@ -138,6 +142,13 @@ public class InputController : MonoBehaviour {
 			}*/
 			break;
 		}
+	}
 
+	void OnPauseGame () {
+		paused = true;
+	}
+
+	void OnResumeGame () {
+		paused = false;
 	}
 }

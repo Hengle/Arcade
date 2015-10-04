@@ -5,7 +5,7 @@ public class EnemySpawn : MonoBehaviour {
 
 	private static List<EnemySpawn> enemySpawns = new List<EnemySpawn> ();
 
-	public float spawnDelay = 10f;
+	public float spawnDelay = 4f;
 	public Transform spawnPoint;
 	private float minTimeToSpawn;
 	private bool canSpawn = true;

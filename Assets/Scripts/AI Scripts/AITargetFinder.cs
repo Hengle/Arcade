@@ -80,7 +80,6 @@ public class AITargetFinder : MonoBehaviour {
 
 	TargetRequest GetTargetRequest () {
 		lock (targetGetterLock) {
-			print ("TARGET QUEUE LENGTH: " + targetRequests.Count);
 			if (targetRequests.Count > 0) {
 				return targetRequests.Dequeue ();
 			} 
@@ -95,15 +94,12 @@ public class AITargetFinder : MonoBehaviour {
 			request = GetTargetRequest ();
 
 			if (request != null) {
-				print (Thread.CurrentThread.Name + " is finding target for: " + request.ai.ownName);
-
 				Target target = ScanForPlayers (request);
-
 				request.ai.targetScanDone = true;
-				Thread.Sleep (10);
+				Thread.Sleep (25);
 			} else {
 				print ("No need for target finding!");
-				Thread.Sleep (1000);
+				Thread.Sleep (500);
 			}
 		}
 	}
@@ -118,9 +114,9 @@ public class AITargetFinder : MonoBehaviour {
 		foreach (Target playerTarget in PathfindingManager.instance.PlayerTargets) {
 			float distance = Vector3.Distance (request.ai.ownPosition, playerTarget.position);
 			
-			if (distance <= request.ai.aggressionRange) {
+			if (distance <= request.aggressionRange) {
 				if (request.ai.hasPriorityTarget) {
-					if (distance < Vector3.Distance (request.ai.ownPosition, request.ai.priorityTarget.position)) {
+					if (distance < Vector3.Distance (request.ownPosition, request.ai.priorityTarget.position)) {
 						request.ai.priorityTarget = playerTarget;
 					}
 				} else {
@@ -142,9 +138,13 @@ public class AITargetFinder : MonoBehaviour {
 
 	public class TargetRequest {
 		public AITargetFinder ai;
+		public float aggressionRange;
+		public Vector3 ownPosition;
 
 		public TargetRequest (AITargetFinder _ai) {
 			ai = _ai;
+			aggressionRange = _ai.aggressionRange;
+			ownPosition = _ai.ownPosition;
 		}
 	}
 }
