@@ -1,14 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AIBehaviourAttack : MonoBehaviour {
+public class AIBehaviourAttack : MonoBehaviour, IBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
+
+	private static string _name = "Attack";
+	public string Name {
+		get {return _name;}
 	}
 	
-	// Update is called once per frame
+	private bool done = false;
+	public bool IsDone {
+		get {return done;}
+	}
+
+
+	public void StartBehaviour () {
+		print ("STARTING ATTACK BEHAVIOUR FOR " + transform.name);
+	}
+	
 	void Update () {
 	
 	}

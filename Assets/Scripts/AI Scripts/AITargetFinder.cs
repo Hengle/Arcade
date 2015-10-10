@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
+[RequireComponent (typeof (AICore))]
 public class AITargetFinder : MonoBehaviour {
 
 	public static int pathfindingThreads = 8;
@@ -33,7 +34,14 @@ public class AITargetFinder : MonoBehaviour {
 	private float timeToWaypointSwitch;
 	private float distanceToCurrentTarget;
 	[HideInInspector]
-	public bool hasPriorityTarget = false;
+	private bool hasPriorityTarget = false;
+
+	public bool HasWeaponTarget {
+		get {return (weaponTarget != null) ? true : false;}
+	}
+	public bool HasPriorityTarget {
+		get {return hasPriorityTarget;}
+	}
 
 	void Awake () {
 		if (!threadsInitialized) {
@@ -68,7 +76,7 @@ public class AITargetFinder : MonoBehaviour {
 		}
 	}
 
-	void OnDestroy () {
+	void OnApplicationQuit () {
 		foreach (Thread thread in targetFinders) {
 			thread.Interrupt ();
 		}
@@ -115,6 +123,7 @@ public class AITargetFinder : MonoBehaviour {
 	static Target ScanForPlayers (TargetRequest request) {
 		foreach (Target playerTarget in PathfindingManager.instance.PlayerTargets) {
 			float distance = Vector3.Distance (request.ai.ownPosition, playerTarget.position);
+			//print ("[TARGET REQUEST] ("+ request.requesterName + "Distance to player: " + distance);
 			
 			if (distance <= request.aggressionRange) {
 				if (request.ai.hasPriorityTarget) {
@@ -142,11 +151,13 @@ public class AITargetFinder : MonoBehaviour {
 		public AITargetFinder ai;
 		public float aggressionRange;
 		public Vector3 ownPosition;
+		public string requesterName;
 
 		public TargetRequest (AITargetFinder _ai) {
 			ai = _ai;
 			aggressionRange = _ai.aggressionRange;
 			ownPosition = _ai.ownPosition;
+			requesterName = _ai.transform.name;
 		}
 	}
 }

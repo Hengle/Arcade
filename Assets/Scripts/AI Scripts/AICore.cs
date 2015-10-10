@@ -8,12 +8,14 @@ public class AICore : MonoBehaviour {
 	private AITargetFinder targetFinder;
 	private IBehaviour currentBehaviour;
 	[ShowOnlyAttribute]
-	public string activeBehaviour;
+	public string activeBehaviourName;
 
 	private bool inSquad = false;
 	
 	[SerializeField][Range (1, 1000)]
 	private float aggressionRange = 500f;
+	bool priorityOverride = false;
+
 
 	public float AggressionRange {
 		get {return aggressionRange;}
@@ -33,13 +35,30 @@ public class AICore : MonoBehaviour {
 	}
 
 	void SoloBehaviour () {
-		if (currentBehaviour != null) {
-			if (currentBehaviour.IsDone) {
-				print ("GETTING NEW BEHAVIOUR FOR: " + transform.name);
+		if (targetFinder.HasPriorityTarget) {
+			if (!priorityOverride) {
+				foreach (IBehaviour behaviour in availableBehaviours) {
+					if (behaviour.Name.Equals ("Attack")) {
+						currentBehaviour = behaviour;
+						priorityOverride = true;
+
+						break;
+					}
+				}
+			}
+
+
+		} else {
+			if (currentBehaviour != null) {
+				if (currentBehaviour.IsDone) {
+					print ("GETTING NEW BEHAVIOUR FOR: " + transform.name);
+					NewBehaviour ();
+				}
+			} else {
 				NewBehaviour ();
 			}
-		} else {
-			NewBehaviour ();
+
+			priorityOverride = false;
 		}
 	}
 
@@ -50,6 +69,6 @@ public class AICore : MonoBehaviour {
 	void NewBehaviour () {
 		currentBehaviour = availableBehaviours[0];
 		currentBehaviour.StartBehaviour ();
-		activeBehaviour = currentBehaviour.Name;
+		activeBehaviourName = currentBehaviour.Name;
 	}
 }

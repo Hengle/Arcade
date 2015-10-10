@@ -96,6 +96,6 @@ public class EnemyManager : MonoBehaviour {
 			yield return new WaitForSeconds (1f);
 		}
 
-		print ("ENEMY SPAWNING DOME");
+		print ("ENEMY SPAWNING DONE");
 	}
 }

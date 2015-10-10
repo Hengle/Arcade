@@ -57,9 +57,9 @@ public class PathfindingManager : MonoBehaviour {
 
 		for (int a = 0; a < extraWaypoints; a++) {
 			int i, j, k;
-			float x = (Random.value < 0.5) ? Random.Range (600, 3000) : -Random.Range (600, 3000);
-			float y = (Random.value < 0.5) ? Random.Range (600, 3000) : -Random.Range (600, 3000);
-			float z = (Random.value < 0.5) ? Random.Range (600, 3000) : -Random.Range (600, 3000);
+			float x = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.xMin, waypointDistanceFromBase.xMin) : -Random.Range (waypointDistanceFromBase.xMin, waypointDistanceFromBase.xMin);
+			float y = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.yMin, waypointDistanceFromBase.yMax) : -Random.Range (waypointDistanceFromBase.yMin, waypointDistanceFromBase.yMax);
+			float z = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.zMin, waypointDistanceFromBase.zMax) : -Random.Range (waypointDistanceFromBase.zMin, waypointDistanceFromBase.zMax);
 			pos = new Vector3 (x, y, z);
 
 			t = (Transform) Instantiate (waypoint, pos, Quaternion.identity);
