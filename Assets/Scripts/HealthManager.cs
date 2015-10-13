@@ -114,7 +114,7 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (piercingDamage > 0) {
 			damage += piercingDamage * (rp.PiercingResistance / (100 + rp.PlasmaResistance));
 		}
-		Debug.Log ("Damage dealt: " + damage);
+		Debug.Log ("Damage dealt: " + damage * multip);
 		return damage * multip;
 	}
 }

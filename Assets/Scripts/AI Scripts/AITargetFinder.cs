@@ -32,7 +32,12 @@ public class AITargetFinder : MonoBehaviour {
 	private float aggressionRange;
 
 	private float timeToWaypointSwitch;
-	private float distanceToCurrentTarget;
+	[ShowOnlyAttribute]
+	public float distanceToCurrent;
+	[ShowOnlyAttribute]
+	public float distanceToWeapon;
+	[ShowOnlyAttribute]
+	public float distanceToPrimary;
 	[HideInInspector]
 	private bool hasPriorityTarget = false;
 
@@ -40,7 +45,7 @@ public class AITargetFinder : MonoBehaviour {
 		get {return (weaponTarget != null) ? true : false;}
 	}
 	public bool HasPriorityTarget {
-		get {return hasPriorityTarget;}
+		get {return (priorityTarget != null) ? true : false;}
 	}
 
 	void Awake () {
@@ -78,7 +83,7 @@ public class AITargetFinder : MonoBehaviour {
 
 	void OnApplicationQuit () {
 		foreach (Thread thread in targetFinders) {
-			thread.Interrupt ();
+			thread.Abort ();
 		}
 	}
 
@@ -132,8 +137,9 @@ public class AITargetFinder : MonoBehaviour {
 					}
 				} else {
 					request.ai.priorityTarget = playerTarget;
-					request.ai.hasPriorityTarget = true;
 				}
+				request.ai.distanceToPrimary = distance;
+				request.ai.hasPriorityTarget = true;
 			}
 		}
 

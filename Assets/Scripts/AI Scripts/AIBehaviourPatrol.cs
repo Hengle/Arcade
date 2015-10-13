@@ -29,6 +29,7 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 	}
 	
 	public void StartBehaviour () {
+		enabled = true;
 		targetsToPatrol = new List<Target> ();
 
 		for (int i = 0; i < 5; i++) {
@@ -39,6 +40,10 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 		done = false;
 	}
 
+	public void EndBehaviour () {
+		enabled = false;
+	}
+
 	void Update () {
 		if (targetsToPatrol.Count == 0) {
 			done = true;
@@ -46,9 +51,11 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 	}
 
 	void FixedUpdate () {
-		if (currentTarget != null) {
-			transform.LookAt (currentTarget.position);
-			movementController.SetMovement (new Vector3 (0, 0, 1));
+		if (!done) {
+			if (currentTarget != null) {
+				transform.LookAt (currentTarget.position);
+				movementController.SetMovement (new Vector3 (0, 0, 1));
+			}
 		}
 	}
 

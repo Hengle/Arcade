@@ -9,7 +9,9 @@ public class GameManager : MonoBehaviour {
 
 	public static List<LevelEndCondition> levelObjectives = new List<LevelEndCondition> ();
 
-	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL}
+	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL, LEVEL_COMPLETED, LOAD_NEXT_LEVEL}
+
+	public string gameStateName;
 	private static GameState gameState;
 	public static GameManager instance;
 
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour {
 
 	[Header ("Obejcts")]
 	public Text respawnText;
+	public Text informationText;
 	public GameObject inGameGUI;
 	private GameObject inGameMenu;
 	public EnemyManager enemyManager;
@@ -64,6 +67,7 @@ public class GameManager : MonoBehaviour {
 			if (GameObject.Find ("MenuCanvas") == null) {
 
 				enemyManager.enabled = true;
+				informationText.enabled = false;
 
 				UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 
@@ -83,9 +87,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start () {
-		if (Application.loadedLevel == 1) {
+		/*if (Application.loadedLevel == 1) {
 			SetGameState (GameState.GAME);
-		}
+		}*/
 	}
 
 	void Update () {
@@ -95,8 +99,12 @@ public class GameManager : MonoBehaviour {
 
 				if (paused) {
 					ResumeGame ();
+					Cursor.lockState = CursorLockMode.Locked;
+					Cursor.visible = false;
 				} else {
 					PauseGame ();
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
 				}
 			}
 		}
@@ -104,6 +112,8 @@ public class GameManager : MonoBehaviour {
 
 	void UpdateState () {
 		Debug.Log ("Updating Game State (" + gameState + ")");
+		gameStateName = CurrentGameState.ToString ();
+
 		switch (gameState) {
 		case GameState.LOAD_LEVEL:
 			StopCoroutine ("LoadLevel");
@@ -111,6 +121,13 @@ public class GameManager : MonoBehaviour {
 			break;
 		case GameState.GAME:
 			StartGame ();
+			break;
+		case GameState.LEVEL_COMPLETED:
+			LevelComplete ();
+			break;
+		case GameState.LOAD_NEXT_LEVEL:
+			StopCoroutine ("LoadNextLevel");
+			StartCoroutine ("LoadNextLevel");
 			break;
 		}
 	}
@@ -128,6 +145,10 @@ public class GameManager : MonoBehaviour {
 	public void StartCoop () {
 		instance.players = new PlayerData[2];
 		SetGameState (GameState.LOAD_LEVEL);
+	}
+
+	public void NextLevel () {
+		SetGameState (GameState.GAME);
 	}
 
 	public void StartRespawnTimer (GameObject go, float time) {
@@ -168,14 +189,18 @@ public class GameManager : MonoBehaviour {
 
 	// Called on every GameObject once Level Laoding Begins
 	void OnLoadLevel () {
-		currentLevel++;
-		AddLevelObjective ("Destory All Enemies");
-	}
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 
+		currentLevel++;
+		levelCompleted = false;
+	}
 
 	// Called when all of current levels goals are met
 	void OnLevelComplete () {
 		enemyManager.enabled = false;
+		NextLevel ();
+		//Application.LoadLevel (2);
 	}
 
 	// Called on every GameObject once game level has been loaded
@@ -188,8 +213,10 @@ public class GameManager : MonoBehaviour {
 
 		audioSource.clip = spaceMusic;
 		audioSource.enabled = true;
+		audioSource.Play ();
 
 		enemyManager.enabled = true;
+
 
 		if (respawnText == null) {
 			respawnText = inGameGUI.transform.FindChild ("HUD").FindChild ("RespawnText").GetComponent<Text> ();
@@ -273,17 +300,21 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator CheckForLevelEnd () {
 		bool isCompleted = false;
+		yield return new WaitForSeconds (1f);
+
 		while (!isCompleted) {
 			isCompleted = true;
 			foreach (LevelEndCondition endCondition in levelObjectives) {
+				print ("LEVEL OBJECTIVE:" + endCondition.name + " status = " + endCondition.done);
 				if (!endCondition.done) {
 					isCompleted = false;
-					break;
 				}
 			}
+			print ("LEVEL NOT COMPLETED");
 			yield return new WaitForSeconds (0.1f);
 		}
 		levelCompleted = true;
+		SetGameState (GameState.LEVEL_COMPLETED);
 		yield return null;
 	}
 

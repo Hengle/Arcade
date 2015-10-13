@@ -12,4 +12,6 @@ public interface IBehaviour {
 	}
 
 	void StartBehaviour ();
+
+	void EndBehaviour ();
 }

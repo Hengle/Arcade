@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour {
 
@@ -11,6 +12,8 @@ public class EnemyManager : MonoBehaviour {
 	public float multiplierPerLevel = 1.1f;
 	public float spawnInterval = 10f;
 	private float timeToSpawn;
+
+	public Queue<Transform> enemySpawnQueue;
 
 	[Header ("Informational")][ShowOnlyAttribute]
 	public int enemiesThisLevel;
@@ -39,13 +42,13 @@ public class EnemyManager : MonoBehaviour {
 	
 	void OnStartGame () {
 		currentLevel = GameManager.instance.CurrentLevel;
-		enemiesThisLevel = (int) (enemiesToSpawn * multiplierPerLevel * currentLevel);
+		enemiesThisLevel = (int) (enemiesToSpawn + (enemiesToSpawn * (multiplierPerLevel - 1) * (currentLevel - 1)));
 		enemiesLeft = enemiesThisLevel;
 		enemiesLeftToSpawn = enemiesThisLevel;
 		enemiesLeftText = GameObject.FindWithTag ("RespawnText").GetComponent<Text> ();
 
 		holder = GameObject.Find ("EnemiesHolder").transform;
-		GameManager.instance.AddLevelObjective ("DestroAll");
+		GameManager.instance.AddLevelObjective ("Destroy All Enemies");
 		StartCoroutine ("SpawnEnemies");
 	}
 
@@ -59,7 +62,7 @@ public class EnemyManager : MonoBehaviour {
 			timeToSpawn -= Time.deltaTime;
 
 			if (enemiesLeft <= 0) {
-				GameManager.instance.SetLevelObjectAsDone ("DestroAll");
+				GameManager.instance.SetLevelObjectAsDone ("Destroy All Enemies");
 			}
 		}
 	}
@@ -78,6 +81,11 @@ public class EnemyManager : MonoBehaviour {
 	
 	IEnumerator SpawnEnemies () {
 		EnemySpawn spawnToUse;
+		enemySpawnQueue = new Queue<Transform> ();
+
+		for (int i = 0; i < enemiesThisLevel; i++) {
+			enemySpawnQueue.Enqueue (enemies[Random.Range (0, enemies.Length -1)]);
+		}
 
 		while (enemiesLeftToSpawn > 0) {
 
@@ -86,7 +94,7 @@ public class EnemyManager : MonoBehaviour {
 					spawnToUse = EnemySpawn.GetAvailaveSpawn ();;
 
 					if (spawnToUse != null) {
-						spawnToUse.Spawn (enemies[0], holder);//[Random.Range (0, enemies.Length-1)]);
+						spawnToUse.Spawn (enemySpawnQueue.Dequeue (), holder);
 						enemiesLeftToSpawn--;
 						timeToSpawn = spawnInterval;
 					}
@@ -97,5 +105,5 @@ public class EnemyManager : MonoBehaviour {
 		}
 
 		print ("ENEMY SPAWNING DONE");
-	}
+	}	
 }

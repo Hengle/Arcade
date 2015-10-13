@@ -3,14 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class AICore : MonoBehaviour {
+	
+	public enum BehaviourType {PASSIVE, DEFENSIVE, OFFENSIVE}
+	public bool avoidObstacles;
 
 	private List<IBehaviour> availableBehaviours = new List<IBehaviour> ();
 	private AITargetFinder targetFinder;
 	private IBehaviour currentBehaviour;
 	[ShowOnlyAttribute]
 	public string activeBehaviourName;
+	[HideInInspector]
+	public WeaponController wc;
 
 	private bool inSquad = false;
+
+	public bool updateBehaviour = false;
+
+	public AITargetFinder GetTargetFinder {
+		get {return targetFinder;}
+	}
 	
 	[SerializeField][Range (1, 1000)]
 	private float aggressionRange = 500f;
@@ -23,25 +34,42 @@ public class AICore : MonoBehaviour {
 
 	void Awake () {
 		targetFinder = GetComponent<AITargetFinder> ();
+		wc = GetComponent<WeaponController> ();
+
 		availableBehaviours.AddRange (GetComponents<IBehaviour> ());
+	}
+
+	void Start () {
+		if (currentBehaviour == null) {
+			updateBehaviour = true;
+		}
 	}
 	
 	void Update () {
-		if (inSquad) {
-			SquadBehaviour ();
-		} else {
-			SoloBehaviour ();
+		if (updateBehaviour) {
+			if (inSquad) {
+				SquadBehaviour ();
+			} else {
+				SoloBehaviour ();
+			}
+			updateBehaviour = false;
 		}
 	}
+
 
 	void SoloBehaviour () {
 		if (targetFinder.HasPriorityTarget) {
 			if (!priorityOverride) {
 				foreach (IBehaviour behaviour in availableBehaviours) {
 					if (behaviour.Name.Equals ("Attack")) {
-						currentBehaviour = behaviour;
-						priorityOverride = true;
+						if (currentBehaviour != null) {
+							currentBehaviour.EndBehaviour ();
+						}
 
+						currentBehaviour = behaviour;
+						activeBehaviourName = behaviour.Name;
+						priorityOverride = true;
+						currentBehaviour.StartBehaviour ();
 						break;
 					}
 				}
@@ -67,8 +95,35 @@ public class AICore : MonoBehaviour {
 	}
 
 	void NewBehaviour () {
-		currentBehaviour = availableBehaviours[0];
-		currentBehaviour.StartBehaviour ();
-		activeBehaviourName = currentBehaviour.Name;
+		if (availableBehaviours.Count > 0) {
+			currentBehaviour = availableBehaviours[0];
+			currentBehaviour.StartBehaviour ();
+			activeBehaviourName = currentBehaviour.Name;
+		} else {
+			print ("REVERTING TO IDLE AS THERE ARE NO AVAILABE BEHAVIOURS!");
+			currentBehaviour = new AIBehaviourIdle ();
+		}
+	}
+
+	public class AIBehaviourIdle : IBehaviour {
+
+		string name = "idle";
+		public string Name {
+			get {return name;}
+		}
+
+		bool done = false;
+		public bool IsDone {
+			get {return done;}
+		}
+
+
+		public void StartBehaviour () {
+
+		}
+
+		public void EndBehaviour () {
+
+		}
 	}
 }
