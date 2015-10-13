@@ -1,23 +1,42 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 
 public class GameManager : MonoBehaviour {
 
-	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL}
+	public static List<LevelEndCondition> levelObjectives = new List<LevelEndCondition> ();
+
+	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL, LEVEL_COMPLETED, LOAD_NEXT_LEVEL}
+
+	public string gameStateName;
 	private static GameState gameState;
 	public static GameManager instance;
 
 	// References
 	private PlayerData[] players;
 	private AudioSource audioSource;
+
+	[Header ("Audio")]
 	public AudioClip menuMusic;
 	public AudioClip spaceMusic;
 
+	// Variables
+	[SerializeField][Header ("Level Info")]
+	private int currentLevel = 0;
+	[ShowOnlyAttribute]
+	public bool levelCompleted = false;
+
+	[Header ("Obejcts")]
 	public Text respawnText;
-	public GameObject InGameMenu;
+	public Text informationText;
+	public GameObject inGameGUI;
+	private GameObject inGameMenu;
+	public EnemyManager enemyManager;
+
+	private bool paused = false;
 
 	public GameState CurrentGameState {
 		get {return gameState;}
@@ -27,9 +46,11 @@ public class GameManager : MonoBehaviour {
 		get {return players;}
 	}
 
-	// Variables
-	[SerializeField]
-	private int currentLevel = 0;
+	public int CurrentLevel  {
+		get {return currentLevel;}
+	}
+
+
 	private bool mapEndScreen = false;
 
 	bool levelLoadingDone = false;
@@ -41,6 +62,21 @@ public class GameManager : MonoBehaviour {
 	void Awake () {
 		if (instance == null) {
 			instance = this;
+			enemyManager = GetComponent<EnemyManager> ();
+
+			if (GameObject.Find ("MenuCanvas") == null) {
+
+				enemyManager.enabled = true;
+				informationText.enabled = false;
+
+				UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+
+				foreach (GameObject go in objects) {
+					go.SendMessage ("OnLoadLevel", SendMessageOptions.DontRequireReceiver);
+				}
+			}
+
+
 		} else {
 			Destroy (this.gameObject);
 		}
@@ -51,21 +87,33 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start () {
-		if (Application.loadedLevel == 1) {
+		/*if (Application.loadedLevel == 1) {
 			SetGameState (GameState.GAME);
-		}
+		}*/
 	}
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			if (CurrentGameState ==GameState.GAME) {
-				InGameMenu.SetActive (!InGameMenu.activeInHierarchy);
+				inGameMenu.SetActive (!inGameMenu.activeInHierarchy);
+
+				if (paused) {
+					ResumeGame ();
+					Cursor.lockState = CursorLockMode.Locked;
+					Cursor.visible = false;
+				} else {
+					PauseGame ();
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+				}
 			}
 		}
 	}
 
 	void UpdateState () {
 		Debug.Log ("Updating Game State (" + gameState + ")");
+		gameStateName = CurrentGameState.ToString ();
+
 		switch (gameState) {
 		case GameState.LOAD_LEVEL:
 			StopCoroutine ("LoadLevel");
@@ -73,6 +121,13 @@ public class GameManager : MonoBehaviour {
 			break;
 		case GameState.GAME:
 			StartGame ();
+			break;
+		case GameState.LEVEL_COMPLETED:
+			LevelComplete ();
+			break;
+		case GameState.LOAD_NEXT_LEVEL:
+			StopCoroutine ("LoadNextLevel");
+			StartCoroutine ("LoadNextLevel");
 			break;
 		}
 	}
@@ -92,13 +147,17 @@ public class GameManager : MonoBehaviour {
 		SetGameState (GameState.LOAD_LEVEL);
 	}
 
+	public void NextLevel () {
+		SetGameState (GameState.GAME);
+	}
+
 	public void StartRespawnTimer (GameObject go, float time) {
 		StartCoroutine (RespawnTimer (go, time));
 	}
 
 	public void PauseGame () {
 		print ("Sending OnPauseGame");
-		UnityEngine.Object[] objects = FindObjectsOfType (typeof (IPausable));
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnPauseGame", SendMessageOptions.DontRequireReceiver);
 		}
@@ -106,33 +165,99 @@ public class GameManager : MonoBehaviour {
 
 	public void ResumeGame () {
 		print ("Sending OnResumeGame");
-		UnityEngine.Object[] objects = FindObjectsOfType (typeof (IPausable));
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnResumeGame", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
 	void StartGame () {
-		print ("Sending OnGameStart");
+		print ("Sending OnStartGame");
 		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnStartGame", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
-	// Called on every GameObject once game level has been loaded
-	void OnStartGame () {
-		StartCoroutine (AddPlayerTargets ());
-		audioSource.clip = spaceMusic;
-		audioSource.enabled = true;
-		if (respawnText != null) {
-			respawnText.gameObject.SetActive (false);
+	void LevelComplete () {
+		print ("Sending OnLevelComplete");
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnLevelComplete", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
+	// Called on every GameObject once Level Laoding Begins
+	void OnLoadLevel () {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
+		currentLevel++;
+		levelCompleted = false;
+	}
+
+	// Called when all of current levels goals are met
+	void OnLevelComplete () {
+		enemyManager.enabled = false;
+		NextLevel ();
+		//Application.LoadLevel (2);
+	}
+
+	// Called on every GameObject once game level has been loaded
+	void OnStartGame () {
+		inGameGUI = GameObject.Find ("InGameGUI");
+		inGameMenu = inGameGUI.transform.FindChild ("InGameMenu").gameObject;
+
+		StartCoroutine (AddPlayerTargets ());
+		StartCoroutine (CheckForLevelEnd ());
+
+		audioSource.clip = spaceMusic;
+		audioSource.enabled = true;
+		audioSource.Play ();
+
+		enemyManager.enabled = true;
+
+
+		if (respawnText == null) {
+			respawnText = inGameGUI.transform.FindChild ("HUD").FindChild ("RespawnText").GetComponent<Text> ();
+		}
+		respawnText.gameObject.SetActive (false);
+
+	}
+
+	void OnPauseGame () {
+		paused = true;
+	}
+
+	void OnResumeGame () {
+		paused = false;
+	}
+	
 	public void ExitToWindows () {
 		print ("Exiting");
 		Application.Quit ();
+	}
+
+	public LevelEndCondition AddLevelObjective (string _name) {
+		foreach (LevelEndCondition _endCondition in levelObjectives) {
+			if (_endCondition.name.Equals (name)) {
+				print ("END CONDITION WITH NAME ALEADY EXISTS! (" + _name + ")");
+				return null;
+			}
+		}
+
+		LevelEndCondition endCondition = new LevelEndCondition (_name);
+		levelObjectives.Add (endCondition);
+		return endCondition;
+	}
+
+	public void SetLevelObjectAsDone (string _name) {
+		foreach (LevelEndCondition endCondition in levelObjectives) {
+			if (endCondition.name.Equals (_name)) {
+				endCondition.done = true;
+				print (endCondition.name + "is done");
+			}
+		}
 	}
 	
 	IEnumerator RespawnTimer (GameObject go, float time) {
@@ -170,6 +295,35 @@ public class GameManager : MonoBehaviour {
 		foreach (PlayerData pd in instance.players) {
 			print (pd.transform.name);
 			PathfindingManager.AddTarget (pd.transform, true);
+		}
+	}
+
+	IEnumerator CheckForLevelEnd () {
+		bool isCompleted = false;
+		yield return new WaitForSeconds (1f);
+
+		while (!isCompleted) {
+			isCompleted = true;
+			foreach (LevelEndCondition endCondition in levelObjectives) {
+				print ("LEVEL OBJECTIVE:" + endCondition.name + " status = " + endCondition.done);
+				if (!endCondition.done) {
+					isCompleted = false;
+				}
+			}
+			print ("LEVEL NOT COMPLETED");
+			yield return new WaitForSeconds (0.1f);
+		}
+		levelCompleted = true;
+		SetGameState (GameState.LEVEL_COMPLETED);
+		yield return null;
+	}
+
+	public class LevelEndCondition {
+		public bool done = false;
+		public string name;
+
+		public LevelEndCondition (string _name) {
+			name = _name;
 		}
 
 	}

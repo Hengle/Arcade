@@ -5,11 +5,14 @@ using System.Collections;
 public class Target : ITarget {
 	
 	public Transform transform;
+	[HideInInspector]
 	public float lifeTime;
+	[HideInInspector]
 	public bool persistent;
+	[HideInInspector]
 	public bool dynamic;
 	public Vector3 position;
-	
+
 	public Target (Transform t) {
 		transform = t;
 		persistent = true;

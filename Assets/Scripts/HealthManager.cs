@@ -9,11 +9,15 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	private float currentHealth;
 	private bool isAlive = true;
 	public bool isPlayer = false;
+	public float modelRemoveDelay = 1f;
+	private bool deathInitialized = false;
 
 	[SerializeField]
 	private ResistanceProfile resistanceProfile = new ResistanceProfile ();
 	public EnergyBar healthBar;
 	public Transform deathEffect;
+
+	bool deathMessegeSent = false;
 
 	void Start () {
 		currentHealth = maxHealth;
@@ -27,17 +31,27 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 	}
 
 	void Update () {
+		if (maxHealth < currentHealth) {
+			currentHealth = maxHealth;
+		}
+
 		if (currentHealth <= 0) {
 			isAlive = false;
 
-			if (deathEffect != null) {
-				Instantiate (deathEffect, transform.position, transform.rotation);
-			}
-
 			if (!isPlayer) {
-				Destroy (this.gameObject);
+				deathInitialized = true;
+
+				if (!deathMessegeSent) {
+					SendMessage ("OnDeath", SendMessageOptions.DontRequireReceiver);
+					deathMessegeSent = true;
+				}
+
+				if (modelRemoveDelay < 0) {
+					Destroy (this.gameObject);
+				}
+				modelRemoveDelay -= Time.deltaTime;
 			} else  {
-				transform.root.gameObject.SetActive (false);
+				transform.gameObject.SetActive (false);
 				GetComponent<PlayerData> ().Respawn ();
 			}
 		}
@@ -51,7 +65,16 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 
 	void OnEnable () {
 		isAlive = true;
+		deathMessegeSent = false;
 		currentHealth = maxHealth;
+	}
+
+	void OnDeath () {
+		
+		if (deathEffect != null) {
+			Transform t = (Transform) Instantiate (deathEffect, transform.position, transform.rotation);
+			t.SetParent (transform);
+		}
 	}
 
 	public void Damage (DamageProfile dp) {
@@ -62,6 +85,10 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (1 - reduction > 0) {
 			currentHealth -= CalculateDamage (resistanceProfile, dp, 1 - reduction);
 		}
+	}
+
+	public void SetHealthMod (float mod) {
+		maxHealth *= mod;
 	}
 
 	public bool Respawn () {
@@ -87,7 +114,7 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		if (piercingDamage > 0) {
 			damage += piercingDamage * (rp.PiercingResistance / (100 + rp.PlasmaResistance));
 		}
-		Debug.Log ("Damage dealt: " + damage);
+		Debug.Log ("Damage dealt: " + damage * multip);
 		return damage * multip;
 	}
 }

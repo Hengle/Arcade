@@ -10,12 +10,13 @@ public class PathfindingManager : MonoBehaviour {
 	private List<Target> players = new List<Target> ();
 
 	public float maxTargetLifeTime = 30f;
-	public int waypoints = 20;
-	private System.Random random;
-
-
+	public int extraWaypoints = 10;
+	public Boundary waypointDistanceFromBase = new Boundary (500, 3000, 500, 3000, 500, 3000);
+	
 	public bool debugNavmesh = false;
 	private bool waypointUpdateQueued = false;
+	public Transform waypoint;
+	private System.Random random;
 
 	public Target[] Waypoints {
 		get {return targets.ToArray ();}
@@ -34,7 +35,13 @@ public class PathfindingManager : MonoBehaviour {
 
 	void Start () {
 		random = new System.Random ();
+	}
 
+	void OnLoadLevel () {
+		CreateBaseNavGrid ();
+	}
+
+	void OnStartGame () {
 		for (int i = 0; i < transform.childCount; i++) {
 			targets.Add (new Target (transform.GetChild (i)));
 		}
@@ -44,7 +51,24 @@ public class PathfindingManager : MonoBehaviour {
 		waypointUpdateQueued = true;
 	}
 
-	void Update () {
+	void CreateBaseNavGrid () {
+		Transform t;
+		Vector3 pos;
+
+		for (int a = 0; a < extraWaypoints; a++) {
+			int i, j, k;
+			float x = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.xMin, waypointDistanceFromBase.xMin) : -Random.Range (waypointDistanceFromBase.xMin, waypointDistanceFromBase.xMin);
+			float y = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.yMin, waypointDistanceFromBase.yMax) : -Random.Range (waypointDistanceFromBase.yMin, waypointDistanceFromBase.yMax);
+			float z = (Random.value < 0.5) ? Random.Range (waypointDistanceFromBase.zMin, waypointDistanceFromBase.zMax) : -Random.Range (waypointDistanceFromBase.zMin, waypointDistanceFromBase.zMax);
+			pos = new Vector3 (x, y, z);
+
+			t = (Transform) Instantiate (waypoint, pos, Quaternion.identity);
+			t.name = ("Waypoint (" + t.position + ")");
+			t.SetParent (transform);
+		}
+	}
+
+	void OnDrawGizmos () {
 		if (debugNavmesh) {
 			foreach (Target t in targets) {
 				foreach (Target t2 in targets) {
@@ -107,9 +131,7 @@ public class PathfindingManager : MonoBehaviour {
 		while (true) {
 			if (waypointUpdateQueued) {
 				foreach (Target t in targets) {
-					foreach (Target t2 in targets) {
-						Debug.DrawLine (t.transform.position, t2.transform.position, Color.blue);
-					}
+					// ADD Update script here
 					yield return new WaitForSeconds (1f);
 					waypointUpdateQueued = false;
 				}

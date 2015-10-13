@@ -8,20 +8,18 @@ public class ExplosiveDevice : MonoBehaviour, IDamaging {
 	private bool hit = false;
 	public float fallOff = 0.4f;
 
+	public Transform hitEffect;
+
 	void OnTriggerEnter (Collider other) {
 		IDamageable canDamage = other.GetComponent<IDamageable> ();
 	
 		if (canDamage != null) {
 			canDamage.DamageWithFallOff (this.damageProfile, Vector3.Distance (transform.position, other.transform.position) * fallOff);
 		}
-	}
-
-	void FixedUpdate () {
-		if (!hit) {
-			hit = true;
-		} else {
-			GetComponent<SphereCollider> ().enabled = false;
+		if (hitEffect != null) {
+			Instantiate (hitEffect, transform.position, Quaternion.identity);
 		}
+		Destroy (this.gameObject);
 	}
 
 	public void SetDamageProfile (DamageProfile dp) {

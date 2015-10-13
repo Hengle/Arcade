@@ -16,27 +16,24 @@ public class PlayerAnimatorController : MonoBehaviour {
 	}
 
 	void Start () {
+		anim.enabled = false;
 		rb.isKinematic = true;
-		initiated = true;
 	}
 
-	void OnEnable () {
+	void OnStartGame () {
 		StartCoroutine (RestoreCollision ());
 
-		if (initiated) {
-			print ("ENABLEED");
-			print (transform.position);
-
+		if (anim.isActiveAndEnabled) {
 			anim.SetTrigger ("SpawnAnim");
-			rb.isKinematic = true;
-
+		} else {
 			anim.enabled = true;
-
-			rb.velocity = Vector3.zero;
-
-			transform.position = WorldManager.instance.playerSpawnPoint.position;
-			transform.rotation = WorldManager.instance.playerSpawnPoint.rotation;
 		}
+		rb.isKinematic = true;
+
+		rb.velocity = Vector3.zero;
+
+		transform.position = WorldManager.instance.playerSpawnPoint.position;
+		transform.rotation = WorldManager.instance.playerSpawnPoint.rotation;
 	}
 	
 	IEnumerator RestoreCollision () {
