@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent (typeof (IMovementController))]
 public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 
 	public bool showPatrolRoute = false;
@@ -22,6 +21,8 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 	public bool IsDone {
 		get {return done;}
 	}
+
+	bool paused = false;
 
 	void Awake () {
 		movementController = GetComponent<IMovementController> ();
@@ -51,10 +52,14 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 	}
 
 	void FixedUpdate () {
+		if (paused) {
+			return;
+		}
+
 		if (!done) {
 			if (currentTarget != null) {
 				transform.LookAt (currentTarget.position);
-				movementController.SetMovement (new Vector3 (0, 0, 1));
+				//movementController.SetMovementAdditive (new Vector3 (0, 0, 1));
 			}
 		}
 	}
@@ -69,7 +74,6 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 				done = true;
 			}
 		}
-
 	}
 
 	void OnDrawGizmos () {
@@ -80,6 +84,14 @@ public class AIBehaviourPatrol : MonoBehaviour, IBehaviour {
 				}
 			}
 		}
+	}
+
+	void OnPauseGame () {
+		paused = true;
+	}
+
+	void OnResumeGame () {
+		paused = false;
 	}
 
 	[System.Serializable]

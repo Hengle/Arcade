@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class MovementControllerSpace : MonoBehaviour, IMovementController, IPausable {
@@ -21,8 +22,8 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 	private Boundary boundary;
 	private bool paused = false;
 
-	Vector3 savedVelocity;
-	Vector3 savedRotationVelocity;
+	Vector3 savedVelocity = Vector3.zero;
+	Vector3 savedRotationVelocity = Vector3.zero;
 
 	
 	// Use this for initialization
@@ -34,9 +35,6 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 	// Update is called once per frame
 	void FixedUpdate () {
 		if (!paused) {
-			float velocityMagnitude = rb.velocity.magnitude;
-			float angle;
-			
 			rb.AddForce (transform.forward * moveInput.z * accelerationForce);
 			rb.AddForce (transform.up * moveInput.y * accelerationForce * 0.7f);
 			rb.AddForce (transform.right * moveInput.x * accelerationForce * 0.7f);
@@ -46,11 +44,13 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 			rb.AddTorque (transform.up * rotVector.x * rotationForce.x);
 			rb.AddTorque (transform.right * rotVector.y * -rotationForce.y);
 			
+			float velocityMagnitude = rb.velocity.magnitude;
+			
 			if (velocityMagnitude > maxVelocity) {
 				rb.velocity = rb.velocity.normalized * maxVelocity;
 				
 			} else if (velocityMagnitude < maxVelocity * -0.7f) {
-				rb.velocity = rb.velocity.normalized * maxVelocity * 0.7f;
+				rb.velocity = rb.velocity.normalized * maxVelocity * -0.7f;
 			}
 		}
 	}
@@ -75,5 +75,15 @@ public class MovementControllerSpace : MonoBehaviour, IMovementController, IPaus
 
 	public void SetRotation (Vector3 vector) {
 		rotVector = vector;
+	}
+
+	public void SetMovementAdditive (Vector3 vector) {
+		moveInput.x += vector.x;
+		moveInput.y += vector.y;
+		moveInput.z += vector.z;
+	}
+
+	public void SetRotationAdditive (Vector3 vector) {
+		rotVector += vector;
 	}
 }

@@ -12,6 +12,8 @@ public class AIBehaviourHome : MonoBehaviour, IBehaviour {
 	}
 	
 	bool done = false;
+	bool paused = false;
+
 	public bool IsDone {
 		get {return done;}
 	}
@@ -41,6 +43,10 @@ public class AIBehaviourHome : MonoBehaviour, IBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+		if (paused) {
+			return;
+		}
+	
 		if (!disabled) {
 			if (ai.HasPriorityTarget) {
 				Quaternion targetRotation = Quaternion.LookRotation (ai.priorityTarget.position - transform.position);
@@ -54,6 +60,14 @@ public class AIBehaviourHome : MonoBehaviour, IBehaviour {
 
 	void OnTriggerEnter (Collider other) {
 		GameManager.instance.respawnText.gameObject.SetActive (false);
+	}
+
+	void OnPauseGame () {
+		paused = true;
+	}
+
+	void OnResumeGame () {
+		paused = false;
 	}
 
 	IEnumerator AngleChecker () {

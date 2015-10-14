@@ -305,12 +305,10 @@ public class GameManager : MonoBehaviour {
 		while (!isCompleted) {
 			isCompleted = true;
 			foreach (LevelEndCondition endCondition in levelObjectives) {
-				print ("LEVEL OBJECTIVE:" + endCondition.name + " status = " + endCondition.done);
 				if (!endCondition.done) {
 					isCompleted = false;
 				}
 			}
-			print ("LEVEL NOT COMPLETED");
 			yield return new WaitForSeconds (0.1f);
 		}
 		levelCompleted = true;

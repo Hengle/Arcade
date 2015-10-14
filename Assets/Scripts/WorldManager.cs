@@ -79,7 +79,7 @@ public class WorldManager : MonoBehaviour {
 
 		float timeAtEnd = Time.time;
 
-		print (String.Format("LEVEL GENERATION took {0:f}s to generate", (timeAtEnd - timeAtStart)));
+		print (String.Format("LEVEL GENERATION took {0:f}s", (timeAtEnd - timeAtStart)));
 		GameManager.instance.SetGameState (GameManager.GameState.GAME);
 	}
 }

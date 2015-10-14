@@ -21,6 +21,16 @@ public class NPCWeaponManager : MonoBehaviour {
 		}
 	}
 
+	void FixedUpdate () {
+		RaycastHit hit;
+
+		if (Physics.Raycast (transform.position, transform.forward, out hit, 600f)) {
+			if (hit.transform.tag.Equals ("PlayerBase")) {
+				Fire ();
+			}
+		}
+	}
+
 	public void Fire () {
 
 		foreach (IWeapon wep in weaponSystems) {

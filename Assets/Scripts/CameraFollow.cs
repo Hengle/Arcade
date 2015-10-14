@@ -6,6 +6,7 @@ public class CameraFollow : MonoBehaviour {
 
 	public bool followPlayer = false;
 	public Vector3 cameraOffset = new Vector3 (0, 2, -8);
+	public Vector3 dynamicOffset = Vector3.zero;
 	public float cameraResponsiveness = 3f;
 	public Vector3 defaultPosition = Vector3.zero;
 	private Transform player;
@@ -24,6 +25,9 @@ public class CameraFollow : MonoBehaviour {
 	private float journeyLength;
 	bool spawnAnimation = false;
 
+
+	InputController playerInput;
+	
 	// Use this for initialization
 	void Start () {
 		StartCoroutine ("FindFirstPlayer");
@@ -32,8 +36,9 @@ public class CameraFollow : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		if (player != null && followPlayer) {
+			dynamicOffset = new Vector3 (0, 0, cameraOffset.z * playerInput.InputVerical);
 			lookPoint = player.transform.position + player.transform.forward * lookpointDistance;
-			transform.position = player.transform.position + player.TransformDirection (cameraOffset);
+			transform.position = player.transform.position + player.TransformDirection (cameraOffset + dynamicOffset);
 			transform.LookAt (lookPoint);
 
 			transform.rotation = player.rotation;
@@ -94,6 +99,7 @@ public class CameraFollow : MonoBehaviour {
 			p = GameManager.instance.Players[0];
 			if (p != null) {
 				player = p.gameObject.transform;
+				playerInput = player.GetComponent<InputController> ();
 				break;
 			}
 			yield return new WaitForSeconds (0.1f);

@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
-[RequireComponent (typeof (AICore))]
 public class AITargetFinder : MonoBehaviour {
 
-	public static int pathfindingThreads = 8;
+	public static int targetFindigThreads = 4;
 	private static bool threadsInitialized = false;
 	private static readonly Object targetGetterLock = new Object ();
 
@@ -29,7 +28,8 @@ public class AITargetFinder : MonoBehaviour {
 	private Vector3 ownPosition;
 	private string ownName;
 	private bool targetScanDone = false;
-	private float aggressionRange;
+	[Range (0, 2000)]
+	public float aggressionRange = 600f;
 
 	private float timeToWaypointSwitch;
 	[ShowOnlyAttribute]
@@ -45,12 +45,12 @@ public class AITargetFinder : MonoBehaviour {
 		get {return (weaponTarget != null) ? true : false;}
 	}
 	public bool HasPriorityTarget {
-		get {return (priorityTarget != null) ? true : false;}
+		get {return hasPriorityTarget;}
 	}
 
 	void Awake () {
 		if (!threadsInitialized) {
-			for (int i = 0; i < pathfindingThreads; i++) {
+			for (int i = 0; i < targetFindigThreads; i++) {
 				Thread thread = new Thread (new ThreadStart (TargetScan));
 				thread.Name = ("Target Scanner " + i);
 				thread.Start ();
@@ -64,7 +64,6 @@ public class AITargetFinder : MonoBehaviour {
 	void Start () {
 		ownName = transform.name;
 		ownPosition = transform.position;
-		aggressionRange = GetComponent<AICore> ().AggressionRange;
 		timeToTargetFind = targetFindInterval;
 
 		StartCoroutine (UpdatePosition (transform));
@@ -113,7 +112,7 @@ public class AITargetFinder : MonoBehaviour {
 				request.ai.targetScanDone = true;
 				Thread.Sleep (25);
 			} else {
-				print ("No need for target finding!");
+				//print ("No need for target finding!");
 				Thread.Sleep (500);
 			}
 		}
@@ -128,8 +127,7 @@ public class AITargetFinder : MonoBehaviour {
 	static Target ScanForPlayers (TargetRequest request) {
 		foreach (Target playerTarget in PathfindingManager.instance.PlayerTargets) {
 			float distance = Vector3.Distance (request.ai.ownPosition, playerTarget.position);
-			//print ("[TARGET REQUEST] ("+ request.requesterName + "Distance to player: " + distance);
-			
+
 			if (distance <= request.aggressionRange) {
 				if (request.ai.hasPriorityTarget) {
 					if (distance < Vector3.Distance (request.ownPosition, request.ai.priorityTarget.position)) {

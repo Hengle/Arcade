@@ -84,7 +84,7 @@ public class EnemyManager : MonoBehaviour {
 		enemySpawnQueue = new Queue<Transform> ();
 
 		for (int i = 0; i < enemiesThisLevel; i++) {
-			enemySpawnQueue.Enqueue (enemies[Random.Range (0, enemies.Length -1)]);
+			enemySpawnQueue.Enqueue (enemies[0]); //Random.Range (0, enemies.Length -1)]);
 		}
 
 		while (enemiesLeftToSpawn > 0) {
