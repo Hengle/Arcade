@@ -3,6 +3,8 @@ using System.Collections;
 
 public class NPCWeaponManager : MonoBehaviour {
 
+	public float fireAtBaseRange = 1000f;
+
 	public GameObject[] weaponMounts;
 	private IWeapon[] weaponSystems;
 
@@ -24,7 +26,7 @@ public class NPCWeaponManager : MonoBehaviour {
 	void FixedUpdate () {
 		RaycastHit hit;
 
-		if (Physics.Raycast (transform.position, transform.forward, out hit, 600f)) {
+		if (Physics.Raycast (transform.position, transform.forward, out hit, fireAtBaseRange)) {
 			if (hit.transform.tag.Equals ("PlayerBase")) {
 				Fire ();
 			}

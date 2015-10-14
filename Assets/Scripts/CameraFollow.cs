@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour {
 	public bool followPlayer = false;
 	public Vector3 cameraOffset = new Vector3 (0, 2, -8);
 	public Vector3 dynamicOffset = Vector3.zero;
+	Vector3 totalOffset = Vector3.zero;
 	public float cameraResponsiveness = 3f;
 	public Vector3 defaultPosition = Vector3.zero;
 	private Transform player;
@@ -36,9 +37,9 @@ public class CameraFollow : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		if (player != null && followPlayer) {
-			dynamicOffset = new Vector3 (0, 0, cameraOffset.z * playerInput.InputVerical);
+			totalOffset = cameraOffset + new Vector3 (0, 0, dynamicOffset.z * playerInput.InputVerical);
 			lookPoint = player.transform.position + player.transform.forward * lookpointDistance;
-			transform.position = player.transform.position + player.TransformDirection (cameraOffset + dynamicOffset);
+			transform.position = player.transform.position + player.TransformDirection (totalOffset);
 			transform.LookAt (lookPoint);
 
 			transform.rotation = player.rotation;

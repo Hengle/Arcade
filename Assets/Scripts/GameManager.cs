@@ -194,6 +194,8 @@ public class GameManager : MonoBehaviour {
 
 		currentLevel++;
 		levelCompleted = false;
+		inGameGUI = GameObject.Find ("InGameGUI");
+		informationText = inGameGUI.transform.FindChild ("InformationLabel").GetComponent<Text> ();
 	}
 
 	// Called when all of current levels goals are met
