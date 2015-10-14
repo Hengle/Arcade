@@ -274,6 +274,7 @@ public class GameManager : MonoBehaviour {
 			}
 			respawnText.gameObject.SetActive (false);
 			go.SetActive (true);
+			go.SendMessage ("OnRespawn");
 		}
 
 		yield return null;

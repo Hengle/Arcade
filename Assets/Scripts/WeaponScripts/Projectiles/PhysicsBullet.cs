@@ -20,6 +20,8 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 	private bool hitScanned = false;
 	private RaycastHit hit;
 
+	private Vector3 savedVelocity;
+	private Vector3 savedAnglVelocity;
 
 	void Awake () {
 		rb = GetComponent<Rigidbody> ();
@@ -29,7 +31,6 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 
 	void Start () {
 		rb.AddForce (transform.forward * launchForce);
-		Debug.Log ("Piercing Damage: " + damageProfile.PiercingDamage);
 	}
 
 	void Update () {
@@ -40,7 +41,9 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 	void FixedUpdate () {
 		if (!hitScanned) {
 			Ray ray = new Ray (transform.position, transform.forward);
-			Physics.Raycast (ray, out hit, rb.velocity.z /2);
+			if (Physics.Raycast (ray, out hit, rb.velocity.z)) {
+				hitScanned = true;
+			}
 
 		} else {
 			transform.position = hit.point;
@@ -53,9 +56,6 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 			ignored = other;
 		} else {
 			GameObject go;
-			
-			Debug.Log (this.name + " hit " + other.name);
-			
 			IDamageable canDamage = other.GetComponent<IDamageable> ();
 			if (canDamage != null) {
 				canDamage.Damage (this.damageProfile);
@@ -75,6 +75,19 @@ public class PhysicsBullet : MonoBehaviour, IDamaging {
 		if (other == ignored) {
 			col.enabled = true;
 		}
+	}
+
+	void OnPauseGame () {
+		savedVelocity = rb.velocity;
+		savedAnglVelocity = rb.angularVelocity;
+
+		rb.velocity = Vector3.zero;
+		rb.angularVelocity = Vector3.zero;
+	}
+
+	void OnResumeGame () {
+		rb.velocity = savedVelocity;
+		rb.angularVelocity = savedAnglVelocity;
 	}
 
 	public void SetDamageProfile (DamageProfile dp){

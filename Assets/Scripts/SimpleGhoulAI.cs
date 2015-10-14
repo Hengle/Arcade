@@ -18,6 +18,7 @@ public class SimpleGhoulAI : MonoBehaviour {
 
 	// Movement
 	[Header ("Movement")] 
+	public float turnDamping = 3f;
 	[SerializeField] [ShowOnlyAttribute]
 	Vector3 movementVector = Vector3.zero;
 	[SerializeField] [ShowOnlyAttribute]
@@ -47,39 +48,11 @@ public class SimpleGhoulAI : MonoBehaviour {
 
 	void Start () {
 		movementVector = new Vector3 (0, 0, 1);
-	}
-	
-	void Update () {
-	
-	}
-
-	void FixedUpdate () {
-		if (paused) {
-			return;
-		}
-		velocityMagnitude = rb.velocity.magnitude;
-
-		if (targetFinder.HasPriorityTarget) {
-			if (Vector3.Angle (transform.forward, targetFinder.priorityTarget.position - transform.position) > 25f) {
-				Quaternion targetRotation = Quaternion.LookRotation (targetFinder.priorityTarget.position - transform.position);
-				transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, Time.fixedDeltaTime * 2);
-			} else {
-				transform.LookAt (targetFinder.priorityTarget.position);
-				weapons.Fire ();
-			}
-		} else {
-			Patrol ();
-
-			Quaternion targetRotation = Quaternion.LookRotation (currentTarget.position - transform.position);
-			transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, Time.fixedDeltaTime * 2);
-		}
-
-		UpdateMovement ();
-
+		StartCoroutine (AIUpdate ());
 	}
 
 	void UpdateMovement () {
-		movementVector = new Vector3 (0, 0, 0.1f);
+		movementVector = new Vector3 (0, 0, 0);
 		movementVector += transform.InverseTransformVector (avoider.movementVector);
 
 		float magnitude = movementVector.magnitude;
@@ -142,6 +115,34 @@ public class SimpleGhoulAI : MonoBehaviour {
 		public Range (int _min, int _max) {
 			min = _min;
 			max = _max;
+		}
+	}
+
+	IEnumerator AIUpdate () {
+		while (true) {
+			if (paused) {
+				yield return new WaitForSeconds (0.1f);
+			} else {
+				velocityMagnitude = rb.velocity.magnitude;
+				
+				if (targetFinder.HasPriorityTarget) {
+					if (Vector3.Angle (transform.forward, targetFinder.priorityTarget.position - transform.position) > 25f) {
+						Quaternion targetRotation = Quaternion.LookRotation (targetFinder.priorityTarget.position - transform.position);
+						transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, Time.fixedDeltaTime * turnDamping);
+					} else {
+						transform.LookAt (targetFinder.priorityTarget.position);
+						weapons.Fire ();
+					}
+				} else {
+					Patrol ();
+					
+					Quaternion targetRotation = Quaternion.LookRotation (currentTarget.position - transform.position);
+					transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, Time.fixedDeltaTime * turnDamping);
+				}
+				
+				UpdateMovement ();
+			}
+			yield return new WaitForSeconds (0.1f);
 		}
 	}
 }

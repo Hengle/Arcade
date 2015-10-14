@@ -77,6 +77,9 @@ public class AITargetFinder : MonoBehaviour {
 		}
 		if (targetScanDone = true) {
 			timeToTargetFind -= Time.deltaTime;
+			if (hasPriorityTarget) {
+				gameObject.SendMessage ("ShowTargeter", SendMessageOptions.DontRequireReceiver);
+			}
 		}
 	}
 

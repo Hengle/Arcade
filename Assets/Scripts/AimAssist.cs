@@ -6,6 +6,7 @@ public class AimAssist : MonoBehaviour {
 
 	Vector3 lookPoint;
 	public float maxHitAngle = 5f;
+	public float scanRadius = 200f;
 
 	void Start () {
 		lookPoint = transform.root.position + transform.root.forward * 2000f;
@@ -13,7 +14,7 @@ public class AimAssist : MonoBehaviour {
 
 	void FixedUpdate () {
 		Ray ray = new Ray (transform.position + transform.forward *10f, transform.root.forward);
-		RaycastHit [] hits = Physics.SphereCastAll (ray, 20f, 3000f);
+		RaycastHit [] hits = Physics.SphereCastAll (ray, scanRadius, 3000f);
 
 		RaycastHit closestTarget;
 		float closestAngle = maxHitAngle;

@@ -69,6 +69,10 @@ public class HealthManager : MonoBehaviour, IDamageable, ILiving {
 		currentHealth = maxHealth;
 	}
 
+	void OnStartGame () {
+		currentHealth = maxHealth;
+	}
+
 	void OnDeath () {
 		
 		if (deathEffect != null) {

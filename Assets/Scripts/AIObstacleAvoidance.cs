@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class AIObstacleAvoidance : MonoBehaviour {
 
 	[Header ("Proximity Check")]
-	public float proximityCheckRadius = 200f;
+	public float proximityCheckRadius = 100f;
 
 	[Header ("Avoidance Movement")]
 	[SerializeField] [ShowOnlyAttribute]

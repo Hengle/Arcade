@@ -3,35 +3,29 @@ using System.Collections;
 
 public class TargetIndicator : MonoBehaviour {
 
-	Transform player;
-	bool show = false;
-	public float defaultColor;
-	public float damageColor;
+	public Transform targetMarker;
+	public float markerDuration = 10f;
+	float markerTimeLeft = -1f;
 
-	GameObject targetMarker;
+	Transform mainCamera;
 
 	void Start () {
-		targetMarker = transform.GetChild (0).gameObject;
-		targetMarker.SetActive (false);
+		targetMarker.gameObject.SetActive (false);
+		mainCamera = GameObject.FindWithTag ("MainCamera").transform;
+	}
+
+	void ActivateMarker () {
+		targetMarker.gameObject.SetActive (true);
+		markerDuration = markerDuration;
 	}
 
 	void Update () {
-		if (show) {
-			if (player != null) {
-				transform.LookAt (player.position);
-			} else {
-				player = GameObject.FindWithTag ("Player").transform;
-			}
+		if (markerTimeLeft > 0) {
+			markerTimeLeft -= Time.deltaTime;
+			targetMarker.transform.LookAt (mainCamera.position);
+			targetMarker.transform.rotation = transform.rotation * Quaternion.Euler (0, 180f, 0);
+		} else {
+			targetMarker.gameObject.SetActive (false);
 		}
-	}
-
-	void ShowTargeter () {
-		targetMarker.SetActive (true);
-		show = true;
-	}
-
-	void HideTargeter () {
-		targetMarker.SetActive (false);
-		show = false;
 	}
 }

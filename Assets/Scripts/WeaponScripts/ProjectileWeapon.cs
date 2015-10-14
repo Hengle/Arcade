@@ -57,9 +57,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 		if (coolDown <= 0) {
 			Transform go;
 			coolDown = 1 / fireRate;
-			print (weaponProjectile.name);
 			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.rotation);
-			print ("IS: " +go.name);
 
 			if (spawnIndex == projectileSpawn.Length -1) {
 				spawnIndex = 0;
