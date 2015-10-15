@@ -20,7 +20,8 @@ public class EnemyManager : MonoBehaviour {
 	[ShowOnlyAttribute]
 	public int enemiesLeftToSpawn;
 	[ShowOnlyAttribute]
-	public int enemiesLeft;
+	public int enemiesDestroyed;
+	private int enemiesCurrently;
 
 	[Header ("References")]
 	public Transform[] enemies;
@@ -43,7 +44,7 @@ public class EnemyManager : MonoBehaviour {
 	void OnStartGame () {
 		currentLevel = GameManager.instance.CurrentLevel;
 		enemiesThisLevel = (int) (enemiesToSpawn + (enemiesToSpawn * (multiplierPerLevel - 1) * (currentLevel - 1)));
-		enemiesLeft = enemiesThisLevel;
+		enemiesDestroyed = 0;
 		enemiesLeftToSpawn = enemiesThisLevel;
 		enemiesLeftText = GameObject.FindWithTag ("RespawnText").GetComponent<Text> ();
 
@@ -58,17 +59,18 @@ public class EnemyManager : MonoBehaviour {
 
 	void Update () {
 		if (!paused) {
-			enemiesLeftText.text = "Enemies Left: " + enemiesLeft;
+			enemiesLeftText.text = "Enemies Destoyed: " + enemiesDestroyed;
 			timeToSpawn -= Time.deltaTime;
 
-			if (enemiesLeft <= 0) {
+			if (enemiesDestroyed > 10000) {
 				GameManager.instance.SetLevelObjectAsDone ("Destroy All Enemies");
 			}
 		}
 	}
 
 	void EnemyDestroyed (int score) {
-		enemiesLeft--;
+		enemiesDestroyed++;
+		enemiesCurrently--;
 	}
 
 	void OnPauseGame () {
@@ -83,25 +85,21 @@ public class EnemyManager : MonoBehaviour {
 		EnemySpawn spawnToUse;
 		enemySpawnQueue = new Queue<Transform> ();
 
-		for (int i = 0; i < enemiesThisLevel; i++) {
-			enemySpawnQueue.Enqueue (enemies[Random.Range (0, enemies.Length -1)]);
-		}
-
 		while (enemiesLeftToSpawn > 0) {
 
 			if (!paused) {
-				if (timeToSpawn <= 0) {
+				if (enemiesThisLevel > enemiesCurrently) {
 					spawnToUse = EnemySpawn.GetAvailaveSpawn ();;
 
 					if (spawnToUse != null) {
-						spawnToUse.Spawn (enemySpawnQueue.Dequeue (), holder);
-						enemiesLeftToSpawn--;
+						spawnToUse.Spawn (enemies[Random.Range (0, 2)], holder);
+						enemiesCurrently++;
 						timeToSpawn = spawnInterval;
 					}
 				}
 			}
 
-			yield return new WaitForSeconds (1f);
+			yield return new WaitForSeconds (spawnInterval);
 		}
 
 		print ("ENEMY SPAWNING DONE");

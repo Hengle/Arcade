@@ -21,6 +21,8 @@ public class WeaponController : MonoBehaviour {
 		if (secondaryWeaponMount != null) {
 			sWeapon = secondaryWeaponMount.GetComponentInChildren<IWeapon> ();
 		}
+
+		print ("FOUND WEAPON SYSTEMS" + pWeapon);
 	}
 
 	void FixedUpdate () {

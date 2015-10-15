@@ -32,7 +32,7 @@ public class AsteroidField : MonoBehaviour, IWorldGen {
 
 		for(int i = 0; i < numAsterois; ++i) {
 			float distance =  Random.Range (distanceFromBase.x, distanceFromBase.y);
-			Vector3 pos = Random.onUnitSphere * distanceFromBase.y -Random.onUnitSphere * distance;
+			Vector3 pos = (Random.onUnitSphere * distanceFromBase.y) * (distanceFromBase.y / distance);
 
 			Transform t = (Transform) Instantiate (asteroidPrefabs[Random.Range (0, asteroidPrefabs.Length -1)], pos, Quaternion.identity);
 

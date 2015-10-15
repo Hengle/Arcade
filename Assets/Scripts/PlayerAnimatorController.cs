@@ -20,6 +20,11 @@ public class PlayerAnimatorController : MonoBehaviour {
 		rb.isKinematic = true;
 	}
 
+	void OnRespawn () {
+		rb.isKinematic = true;
+		OnStartGame ();
+	}
+
 	void OnStartGame () {
 		StartCoroutine (RestoreCollision ());
 

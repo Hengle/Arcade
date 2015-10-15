@@ -21,6 +21,18 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 	private Transform[] projectileSpawn;
 	private bool hasMultiSpawn = false;
 
+	public bool CanFire {
+		get {return (coolDown <= 0) ? true : false;}
+	}
+	
+	public WeaponClass GetWeaponClass {
+		get {return weaponClass;}
+	}
+	
+	public WeaponType GetWeaponType {
+		get {return weaponType;}
+	}
+
 	void Awake () {
 		if (transform.FindChild ("ProjectileSpawn").GetComponent<ProjectileMultiSpawn> () != null) {
 			projectileSpawn = transform.FindChild ("ProjectileSpawn").GetComponent<ProjectileMultiSpawn> ().SpawnPoint;
@@ -38,28 +50,13 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon {
 		}
 	}
 
-	public bool CanFire () {
-		if (coolDown <= 0) {
-			return true;
-		}
-		return false;
-	}
 
-	public WeaponClass GetWeaponClass () {
-		return this.weaponClass;
-	}
-	
-	public WeaponType GetWeaponType () {
-		return this.weaponType;
-	}
 
 	public void Fire () {
 		if (coolDown <= 0) {
 			Transform go;
 			coolDown = 1 / fireRate;
-			print (weaponProjectile.name);
 			go = (Transform) Instantiate (weaponProjectile, projectileSpawn[spawnIndex].transform.position, transform.rotation);
-			print ("IS: " +go.name);
 
 			if (spawnIndex == projectileSpawn.Length -1) {
 				spawnIndex = 0;
