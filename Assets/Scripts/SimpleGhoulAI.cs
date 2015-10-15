@@ -35,6 +35,9 @@ public class SimpleGhoulAI : MonoBehaviour {
 	[SerializeField]
 	private Target currentTarget = null;
 
+	private static int maxAIUpdatesPerFrame = 5;
+	private static int updatesUsed = 0;
+
 	bool doneCurretBehaviour = false;
 
 	void Awake () {
@@ -118,15 +121,22 @@ public class SimpleGhoulAI : MonoBehaviour {
 		}
 	}
 
+	void LateUpdate () {
+		updatesUsed = 0;
+	}
+
 	IEnumerator AIUpdate () {
 		while (true) {
-			if (paused) {
+			if (paused || updatesUsed >= maxAIUpdatesPerFrame) {
 				yield return new WaitForSeconds (0.1f);
 			} else {
+				updatesUsed++;
 				velocityMagnitude = rb.velocity.magnitude;
 				
 				if (targetFinder.HasPriorityTarget) {
-					if (Vector3.Angle (transform.forward, targetFinder.priorityTarget.position - transform.position) > 25f) {
+					float angle = Vector3.Angle (transform.forward, targetFinder.priorityTarget.position - transform.position);
+
+					if (angle > 15f) {
 						Quaternion targetRotation = Quaternion.LookRotation (targetFinder.priorityTarget.position - transform.position);
 						transform.rotation = Quaternion.Slerp (transform.rotation, targetRotation, Time.fixedDeltaTime * turnDamping);
 					} else {

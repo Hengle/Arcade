@@ -19,21 +19,21 @@ public class MissileWeapon : MonoBehaviour, IWeapon {
 	
 	private Transform projectileSpawn;
 
+	public WeaponType GetWeaponType {
+		get {return weaponType;}
+	}
+	
+	public WeaponClass GetWeaponClass {
+		get {return weaponClass;}
+	}
+	
+	public bool CanFire {
+		get {return (coolDown <= 0) ? true : false;}
+	}
+
 	void Awake () {
 		projectileSpawn = transform.FindChild ("ProjectileSpawn");
 		//audio = GetComponent<AudioSource> ();
-	}
-
-	public WeaponType GetWeaponType () {
-		return weaponType;
-	}
-
-	public WeaponClass GetWeaponClass () {
-		return weaponClass;
-	}
-
-	public bool CanFire () {
-		return (coolDown <= 0) ? true : false;
 	}
 
 	public void Fire () {

@@ -7,12 +7,15 @@ public class HomingRocket : MonoBehaviour {
 
 	public float accelerationTime = 2f;
 	public float flightSpeed = 200f;
+	public float armTime = 1f;
 
 	public DamageProfile damageProfile;
 	public Transform hitEffect;
 
 	[ShowOnlyAttribute]
 	public float velocityZ;
+	[SerializeField][ShowOnlyAttribute]
+	bool armed = false;
 
 	void Awake () {
 		rb = GetComponent<Rigidbody> ();
@@ -29,17 +32,27 @@ public class HomingRocket : MonoBehaviour {
 		velocityZ = rb.velocity.magnitude;
 	}
 
+	void Update () {
+		if (armTime > 0) {
+			armTime -= Time.deltaTime;
+		} else {
+			armed = true;
+		}
+	}
+
 	void OnTriggerEnter (Collider other) {
-		IDamageable canDamage = other.GetComponent<IDamageable> ();
-
-		if (canDamage != null) {
-			canDamage.Damage (damageProfile);
+		if (armed) {
+			IDamageable canDamage = other.GetComponent<IDamageable> ();
+			
+			if (canDamage != null) {
+				canDamage.Damage (damageProfile);
+			}
+			
+			if (hitEffect != null) {
+				Instantiate (hitEffect, transform.position, Quaternion.identity);
+			}
+			
+			Destroy (this.gameObject);
 		}
-
-		if (hitEffect != null) {
-			Instantiate (hitEffect, transform.position, Quaternion.identity);
-		}
-
-		Destroy (this.gameObject);
 	}
 }

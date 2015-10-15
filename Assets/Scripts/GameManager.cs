@@ -194,8 +194,6 @@ public class GameManager : MonoBehaviour {
 
 		currentLevel++;
 		levelCompleted = false;
-		inGameGUI = GameObject.Find ("InGameGUI");
-		informationText = inGameGUI.transform.FindChild ("InformationLabel").GetComponent<Text> ();
 	}
 
 	// Called when all of current levels goals are met
@@ -209,6 +207,7 @@ public class GameManager : MonoBehaviour {
 	void OnStartGame () {
 		inGameGUI = GameObject.Find ("InGameGUI");
 		inGameMenu = inGameGUI.transform.FindChild ("InGameMenu").gameObject;
+		informationText = GameObject.Find ("InformationLabel").GetComponent<Text> ();
 
 		StartCoroutine (AddPlayerTargets ());
 		StartCoroutine (CheckForLevelEnd ());
@@ -261,10 +260,17 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 	}
+
+	public void ReturnToMenu () {
+		Application.LoadLevel (0);
+	}
 	
 	IEnumerator RespawnTimer (GameObject go, float time) {
+		PathfindingManager.RemoveTarget (transform, true);
 		respawnText.gameObject.SetActive (true);
+
 		if (time == -1) {
+			print ("GAME OVER");
 			respawnText.text = "Game Over";
 		} else {
 			while (time > 0) {
@@ -275,6 +281,7 @@ public class GameManager : MonoBehaviour {
 			respawnText.gameObject.SetActive (false);
 			go.SetActive (true);
 			go.SendMessage ("OnRespawn");
+			PathfindingManager.AddTarget (go.transform, true);
 		}
 
 		yield return null;

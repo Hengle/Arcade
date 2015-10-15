@@ -28,6 +28,13 @@ public class AIObstacleAvoidance : MonoBehaviour {
 	[SerializeField] [ShowOnlyAttribute]
 	Vector3 currentPosition = Vector3.zero;
 	Vector3 currentForward = Vector3.zero;
+	string ownTag;
+
+	void Awake () {
+		currentPosition = transform.position;
+		currentForward = transform.forward;
+		ownTag = transform.tag;
+	}
 	
 	void Start () {
 		if (!threadsInitialized) {
@@ -92,8 +99,10 @@ public class AIObstacleAvoidance : MonoBehaviour {
 				List<NavigationObject> navObjs = new List<NavigationObject> ();
 				
 				for (int i = 0; i < colliders.Length; i++) {
-					if (!(colliders[i].tag.Equals ("Waypoint") || (colliders[i].tag.Equals ("Projectile")))) {
-						navObjs.Add (new NavigationObject (colliders[i]));
+					if ( !(colliders[i].tag.Equals ("Waypoint") || colliders[i].tag.Equals ("Projectile"))) {
+						if (colliders[i].transform != transform) {
+							navObjs.Add (new NavigationObject (colliders[i]));
+						}
 					}
 				}
 				navRequests.Enqueue (new NavigationRequest (transform, this, navObjs.ToArray ()));

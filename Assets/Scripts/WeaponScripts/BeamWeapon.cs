@@ -19,6 +19,19 @@ public class BeamWeapon : MonoBehaviour, IWeapon {
 
 	private Transform projectileSpawn;
 
+	
+	public bool CanFire {
+		get {return (coolDown <= 0) ? true : false;}
+	}
+	
+	public WeaponClass GetWeaponClass {
+		get {return weaponClass;}
+	}
+	
+	public WeaponType GetWeaponType {
+		get {return weaponType;}
+	}
+
 	void Start () {
 		projectileSpawn = transform.FindChild ("ProjectileSpawn");
 		audio = GetComponent<AudioSource> ();
@@ -30,22 +43,7 @@ public class BeamWeapon : MonoBehaviour, IWeapon {
 		}
 		Debug.DrawLine (transform.position, transform.position + transform.forward * 100);
 	}
-	
-	public bool CanFire () {
-		if (coolDown <= 0) {
-			return true;
-		}
-		return false;
-	}
-	
-	public WeaponClass GetWeaponClass () {
-		return this.weaponClass;
-	}
-	
-	public WeaponType GetWeaponType () {
-		return this.weaponType;
-	}
-	
+
 	public void Fire () {
 		if (coolDown <= 0) {
 			coolDown = 1 / fireRate;

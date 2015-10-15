@@ -21,6 +21,8 @@ public class AITargetFinder : MonoBehaviour {
 	public float positionUpdateInterval = 0.05f;
 
 	[Header ("Target Information")]
+	[ShowOnlyAttribute]
+	public bool hasPriorityTarget = false;
 	public Target curretTarget = null;
 	public Target weaponTarget = null;
 	public Target priorityTarget = null;
@@ -38,8 +40,6 @@ public class AITargetFinder : MonoBehaviour {
 	public float distanceToWeapon;
 	[ShowOnlyAttribute]
 	public float distanceToPrimary;
-	[HideInInspector]
-	private bool hasPriorityTarget = false;
 
 	public bool HasWeaponTarget {
 		get {return (weaponTarget != null) ? true : false;}
@@ -77,9 +77,6 @@ public class AITargetFinder : MonoBehaviour {
 		}
 		if (targetScanDone = true) {
 			timeToTargetFind -= Time.deltaTime;
-			if (hasPriorityTarget) {
-				gameObject.SendMessage ("ShowTargeter", SendMessageOptions.DontRequireReceiver);
-			}
 		}
 	}
 
@@ -128,6 +125,7 @@ public class AITargetFinder : MonoBehaviour {
 	}
 
 	static Target ScanForPlayers (TargetRequest request) {
+		request.ai.hasPriorityTarget = false;
 		foreach (Target playerTarget in PathfindingManager.instance.PlayerTargets) {
 			float distance = Vector3.Distance (request.ai.ownPosition, playerTarget.position);
 
@@ -138,6 +136,7 @@ public class AITargetFinder : MonoBehaviour {
 					}
 				} else {
 					request.ai.priorityTarget = playerTarget;
+					request.ai.hasPriorityTarget = true;
 				}
 				request.ai.distanceToPrimary = distance;
 				request.ai.hasPriorityTarget = true;

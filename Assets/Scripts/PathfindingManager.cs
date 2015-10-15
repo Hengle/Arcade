@@ -100,6 +100,16 @@ public class PathfindingManager : MonoBehaviour {
 		}
 	}
 
+	public static void RemoveTarget (Transform t, bool isPlayer) {
+		if (isPlayer) {
+			foreach (Target target in instance.players) {
+				if (target.transform.Equals (t)) {
+					instance.targets.Remove (target);
+				}
+			}
+		}
+	}
+
 	IEnumerator UpdateLifeTimes () {
 		while (true) {
 			foreach (Target t in instance.targets) {
