@@ -210,8 +210,6 @@ public class GameManager : MonoBehaviour {
 		inGameMenu = inGameGUI.transform.FindChild ("InGameMenu").gameObject;
 		informationText = GameObject.Find ("InformationLabel").GetComponent<Text> ();
 		informationText.text = "";
-		endGameMenu = GameObject.Find ("EndGameMenu");
-		endGameMenu.SetActive (false);
 
 		StartCoroutine (AddPlayerTargets ());
 		StartCoroutine (CheckForLevelEnd ());
@@ -268,15 +266,25 @@ public class GameManager : MonoBehaviour {
 	public void ReturnToMenu () {
 		Application.LoadLevel (0);
 	}
+
+	void SendGameOver () {
+		print ("GAME OVER");
+		respawnText.text = "Game Over";
+		endGameMenu.SetActive (true);
+
+		
+		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
+		foreach (GameObject go in objects) {
+			go.SendMessage ("OnGameOver", SendMessageOptions.DontRequireReceiver);
+		}
+	}
 	
 	IEnumerator RespawnTimer (GameObject go, float time) {
 		PathfindingManager.RemoveTarget (transform, true);
 		respawnText.gameObject.SetActive (true);
 
 		if (time == -1) {
-			print ("GAME OVER");
-			respawnText.text = "Game Over";
-			endGameMenu.SetActive (true);
+
 		} else {
 			while (time > 0) {
 				respawnText.text = String.Format ("Respawning\n{0:f1} s", time);
@@ -293,15 +301,13 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator LoadLevel () {
+		AsyncOperation async = Application.LoadLevelAsync (1);
+		yield return async;
+
 		UnityEngine.Object[] objects = FindObjectsOfType (typeof (GameObject));
 		foreach (GameObject go in objects) {
 			go.SendMessage ("OnLoadLevel", SendMessageOptions.DontRequireReceiver);
 		}
-
-		
-		AsyncOperation async = Application.LoadLevelAsync (1);
-		yield return async;
-		levelLoadingDone = true;
 	}
 
 	IEnumerator AddPlayerTargets () {
