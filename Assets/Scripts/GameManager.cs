@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour {
 
 	public enum GameState {MAIN_MENU, GAME, LOAD_LEVEL, LEVEL_COMPLETED, LOAD_NEXT_LEVEL}
 
+	[ShowOnlyAttribute]
 	public string gameStateName;
 	private static GameState gameState;
 	public static GameManager instance;
@@ -284,7 +285,7 @@ public class GameManager : MonoBehaviour {
 		respawnText.gameObject.SetActive (true);
 
 		if (time == -1) {
-
+			SendGameOver ();
 		} else {
 			while (time > 0) {
 				respawnText.text = String.Format ("Respawning\n{0:f1} s", time);
