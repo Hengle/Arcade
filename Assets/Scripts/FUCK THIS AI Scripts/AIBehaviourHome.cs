@@ -58,10 +58,6 @@ public class AIBehaviourHome : MonoBehaviour, IBehaviour {
 		}
 	}
 
-	void OnTriggerEnter (Collider other) {
-		GameManager.instance.respawnText.gameObject.SetActive (false);
-	}
-
 	void OnPauseGame () {
 		paused = true;
 	}

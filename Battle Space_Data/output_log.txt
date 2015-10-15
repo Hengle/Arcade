@@ -1,0 +1,297 @@
+Initialize engine version: 5.1.1f1 (2046fc06d4d8)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: AMD Radeon HD 7900 Series (ID=0x679b)
+    Vendor:   ATI
+    VRAM:     6102 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-UnityScript.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Assembly-UnityScript.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Mad2D.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\Mad2D.dll into Unity Child Domain
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\MadCommons.dll (this message is harmless)
+Loading C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\MadCommons.dll into Unity Child Domain
+- Completed reload, in  0.075 seconds
+<RI> Initializing input.
+<RI> Input initialized.
+desktop: 1920x1080 60Hz; virtual: 5760x1080 at -1920,0
+<RI> Initialized touch support.
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Hyaden\Documents\GitHub\Arcade\Battle Space_Data\Managed\System.dll (this message is harmless)
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 8e64 -> priority: 1 
+  Thread -> id: 2370 -> priority: 1 
+2
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Updating Game State (LOAD_LEVEL)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+OnLoadLevel Called
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+[WORLDGEN]: Starting to add hazards
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+[WORLDGEN]: Starting Asteroid Field gen
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.926012 ms
+PulseLaser (BeamWeapon)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+FOUND WEAPON SYSTEMSPulseLaser (BeamWeapon)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Input Index:1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 2d98 -> priority: 1 
+  Thread -> id: 8ff4 -> priority: 1 
+  Thread -> id: 8c1c -> priority: 1 
+  Thread -> id: 8c04 -> priority: 1 
+
+Unloading 22 unused Assets to reduce memory usage. Loaded Objects now: 8081.
+Total: 1.269504 ms (FindLiveObjects: 0.321549 ms CreateObjectMapping: 0.108603 ms MarkObjects: 0.783549 ms  DeleteObjects: 0.039739 ms)
+
+World (AsteroidField) DONE!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+LEVEL GENERATION took 0.21s
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Updating Game State (GAME)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Sending OnStartGame
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at CameraFollow.OnStartGame () [0x00000] in <filename unknown>:0 
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+UnityEngine.GameObject:SendMessage(String, SendMessageOptions)
+GameManager:StartGame()
+GameManager:UpdateState()
+GameManager:SetGameState(GameState)
+<GenerateTerrain>c__Iterator1C:MoveNext()
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at CameraFollow.OnStartGame () [0x00000] in <filename unknown>:0 
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+UnityEngine.GameObject:SendMessage(String, SendMessageOptions)
+GameManager:StartGame()
+GameManager:UpdateState()
+GameManager:SetGameState(GameState)
+<GenerateTerrain>c__Iterator1C:MoveNext()
+ 
+(Filename:  Line: -1)
+
+SpacePlayer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+First Player Found (SpacePlayer)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+First Player Found (SpacePlayer)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+PATHFINDING THREADS INITILIZED
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 29
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 29
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 29
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 29
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 29
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Asteroid 02(Clone)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 16.66667
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 34.8
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Asteroid 02(Clone)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 16.66667
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 34.8
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Asteroid 02(Clone)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 16.66667
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Asteroid 02(Clone)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 16.66667
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 34.8
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 34.8
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Sending OnPauseGame
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 50
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Damage dealt: 50
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Activating marker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+

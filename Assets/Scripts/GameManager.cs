@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
 	public GameObject inGameGUI;
 	private GameObject inGameMenu;
 	public EnemyManager enemyManager;
+	public GameObject endGameMenu;
 
 	private bool paused = false;
 
@@ -208,6 +209,9 @@ public class GameManager : MonoBehaviour {
 		inGameGUI = GameObject.Find ("InGameGUI");
 		inGameMenu = inGameGUI.transform.FindChild ("InGameMenu").gameObject;
 		informationText = GameObject.Find ("InformationLabel").GetComponent<Text> ();
+		informationText.text = "";
+		endGameMenu = GameObject.Find ("EndGameMenu");
+		endGameMenu.SetActive (false);
 
 		StartCoroutine (AddPlayerTargets ());
 		StartCoroutine (CheckForLevelEnd ());
@@ -272,6 +276,7 @@ public class GameManager : MonoBehaviour {
 		if (time == -1) {
 			print ("GAME OVER");
 			respawnText.text = "Game Over";
+			endGameMenu.SetActive (true);
 		} else {
 			while (time > 0) {
 				respawnText.text = String.Format ("Respawning\n{0:f1} s", time);
